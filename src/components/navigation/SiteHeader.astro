@@ -79,9 +79,29 @@ import { NAVIGATION_ITEMS, SITE } from '../../data/site';
 		</nav>
 
 		<div class="mobile-menu-footer" data-menu-footer>
-			<a href={SITE.phone.href}>{SITE.phone.display}</a>
-			<a href={SITE.whatsapp.href} target="_blank" rel="noreferrer">WhatsApp</a>
-			<a href={`mailto:${SITE.email}`}>Correo</a>
+			<a
+				class="menu-contact menu-contact-phone"
+				href={SITE.phone.href}
+				aria-label={`Llamar al ${SITE.phone.display}`}
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M8.4 3.5 6.7 2.9a2 2 0 0 0-2.4 1.2l-.8 2.1c-.4 1-.3 2.1.2 3.1 2.2 4.4 5.8 8 10.2 10.2 1 .5 2.1.6 3.1.2l2.1-.8a2 2 0 0 0 1.2-2.4l-.6-1.7a2 2 0 0 0-2.2-1.3l-2.2.4a1.9 1.9 0 0 1-1.7-.5l-3-3a1.9 1.9 0 0 1-.5-1.7l.4-2.2a2 2 0 0 0-1.3-2.2Z" />
+				</svg>
+				{SITE.phone.display}
+			</a>
+			<a
+				class="menu-contact menu-contact-whatsapp"
+				href={SITE.whatsapp.href}
+				target="_blank"
+				rel="noreferrer"
+				aria-label="Contactar por WhatsApp"
+			>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M20.5 11.7a8.5 8.5 0 0 1-12.6 7.5L3.5 20.5l1.3-4.3a8.5 8.5 0 1 1 15.7-4.5Z" />
+					<path d="M9 7.8c.2-.4.4-.4.7-.4h.4c.1 0 .3 0 .4.4l.7 1.7c.1.3 0 .5-.1.7l-.5.6c-.2.2-.1.4 0 .6.5.9 1.2 1.6 2.1 2.1.2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.7-.1l1.7.8c.3.1.4.3.3.6-.1.6-.4 1.2-.9 1.6-.5.4-1.1.6-1.8.5-1.1-.2-2.6-.7-4.2-2.1-1.3-1.2-2.3-2.7-2.6-4-.2-.8.2-1.5.5-1.9L9 7.8Z" />
+				</svg>
+				WhatsApp
+			</a>
 		</div>
 	</div>
 </div>
@@ -243,11 +263,19 @@ import { NAVIGATION_ITEMS, SITE } from '../../data/site';
 		aspect-ratio: 1;
 		align-items: center;
 		justify-content: center;
-		border: 1px solid rgba(255, 255, 255, 0.16);
+		border: 1px solid rgba(138, 215, 255, 0.5);
 		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.04);
-		color: white;
+		background: rgba(32, 164, 255, 0.18);
+		box-shadow: inset 0 0 1.2rem rgba(32, 164, 255, 0.12), 0 0 1.5rem rgba(32, 164, 255, 0.08);
+		color: var(--color-electric-light);
 		cursor: pointer;
+		transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+	}
+
+	.menu-toggle:hover {
+		transform: translateY(-1px);
+		border-color: var(--color-electric-light);
+		background: rgba(32, 164, 255, 0.28);
 	}
 
 	.menu-toggle span {
@@ -358,8 +386,48 @@ import { NAVIGATION_ITEMS, SITE } from '../../data/site';
 		stroke-width: 1.25;
 	}
 
-	.mobile-menu-footer { justify-content: flex-start; gap: 1.5rem; text-transform: none; }
-	.mobile-menu-footer a { text-decoration: none; }
+	.mobile-menu-footer {
+		justify-content: center;
+		gap: 0.75rem;
+		letter-spacing: 0;
+		text-transform: none;
+	}
+
+	.menu-contact {
+		display: inline-flex;
+		min-height: 3.15rem;
+		align-items: center;
+		justify-content: center;
+		gap: 0.55rem;
+		border-radius: 999px;
+		padding: 0.8rem 1.15rem;
+		font-size: 0.7rem;
+		font-weight: 800;
+		text-decoration: none;
+		transition: transform 180ms ease, filter 180ms ease;
+	}
+
+	.menu-contact:hover { transform: translateY(-2px); filter: brightness(1.08); }
+	.menu-contact svg {
+		width: 1rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.55;
+	}
+
+	.menu-contact-phone {
+		border: 1px solid rgba(138, 215, 255, 0.42);
+		background: rgba(32, 164, 255, 0.16);
+		color: var(--color-electric-light);
+	}
+
+	.menu-contact-whatsapp {
+		border: 1px solid #25d366;
+		background: #25d366;
+		color: #07140c;
+	}
 
 	@media (max-width: 68rem) {
 		.desktop-nav, .desktop-actions { display: none; }
@@ -371,6 +439,7 @@ import { NAVIGATION_ITEMS, SITE } from '../../data/site';
 		.brand-mark { width: 2.25rem; }
 		.brand-name { font-size: 0.9rem; }
 		.brand-number { font-size: 0.68rem; }
-		.mobile-menu-footer { flex-wrap: wrap; gap: 0.75rem 1.25rem; }
+		.mobile-menu-footer { gap: 0.6rem; }
+		.menu-contact { flex: 1 1 0; padding-inline: 0.75rem; }
 	}
 </style>

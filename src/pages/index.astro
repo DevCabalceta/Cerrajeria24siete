@@ -1,5 +1,7 @@
 ---
 import HeroSection from '../components/sections/HeroSection.astro';
+import ServicesSection from '../components/sections/ServicesSection.astro';
+import CoverageSection from '../components/sections/CoverageSection.astro';
 import SiteHeader from '../components/navigation/SiteHeader.astro';
 import heroImage from '../assets/images/hero/key-cutting-workshop.png';
 import { getImage } from 'astro:assets';
@@ -19,5 +21,12 @@ const socialImage = new URL(optimizedSocialImage.src, Astro.site).toString();
 	<SiteHeader />
 	<main id="contenido">
 		<HeroSection />
+		<ServicesSection />
+		<CoverageSection />
 	</main>
 </Layout>
+
+<script>
+	import { initSectionTransitions } from '../scripts/section-transitions';
+	initSectionTransitions();
+</script>

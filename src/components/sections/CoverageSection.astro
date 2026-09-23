@@ -1,0 +1,737 @@
+---
+import mapMask from '../../assets/images/coverage/costa-rica-mask.png';
+import { COVERAGE_CANTON_COUNT, COVERAGE_PROVINCES } from '../../data/coverage';
+import { SITE } from '../../data/site';
+
+const coverageWhatsappLink = `${SITE.whatsapp.href.split('?')[0]}?text=${encodeURIComponent(
+	'Hola Cerrajería24siete, quisiera confirmar la cobertura para mi ubicación.',
+)}`;
+---
+
+<section
+	class="coverage"
+	id="cobertura"
+	aria-labelledby="coverage-title"
+	data-section-panel
+	data-coverage
+>
+	<div class="coverage-grid" aria-hidden="true"></div>
+	<div class="coverage-aurora coverage-aurora-one" aria-hidden="true"></div>
+	<div class="coverage-aurora coverage-aurora-two" aria-hidden="true"></div>
+
+	<div class="coverage-shell page-shell">
+		<header class="coverage-copy">
+			<div class="coverage-label" data-coverage-reveal>
+				<span>03</span>
+				<p>Cobertura</p>
+			</div>
+
+			<p class="coverage-kicker" data-coverage-reveal>
+				Servicio a domicilio <i></i> Disponible 24/7
+			</p>
+			<h2 id="coverage-title" data-coverage-reveal>
+				Donde nos<br />
+				<span>necesite.</span>
+			</h2>
+			<p class="coverage-description" data-coverage-reveal>
+				Atendemos Heredia, San José, Alajuela y toda la Gran Área Metropolitana.
+				Nuestra cobertura también se extiende al resto del territorio nacional.
+			</p>
+
+			<div class="coverage-actions" data-coverage-reveal>
+				<a href={coverageWhatsappLink} target="_blank" rel="noreferrer">
+					<span>Confirmar mi ubicación</span>
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path d="M5 12h14m-5-5 5 5-5 5"></path>
+					</svg>
+				</a>
+				<p><strong>7 provincias</strong><span>{COVERAGE_CANTON_COUNT} cantones</span></p>
+			</div>
+		</header>
+
+		<div class="coverage-visual" data-coverage-map>
+			<div class="map-orbit map-orbit-outer" aria-hidden="true"></div>
+			<div class="map-orbit map-orbit-inner" aria-hidden="true"></div>
+			<div class="map-coordinate coordinate-top" aria-hidden="true">10.0000° N</div>
+			<div class="map-coordinate coordinate-bottom" aria-hidden="true">84.0000° O</div>
+
+			<div
+				class="map-land"
+				style={`--map-mask: url("${mapMask.src}")`}
+				aria-hidden="true"
+			>
+				<svg class="topography" viewBox="0 0 640 580" preserveAspectRatio="none">
+					<g>
+						<path d="M-42 86C54 22 94 152 191 88s133-36 208 17 136 1 244-76" />
+						<path d="M-39 108C50 47 102 170 198 109s130-31 207 18 138-3 249-74" />
+						<path d="M-31 134C54 75 111 188 204 133s129-28 204 17 142-5 251-69" />
+						<path d="M-21 164C61 107 118 207 211 157s126-21 204 19 139-7 249-66" />
+						<path d="M-13 197C66 144 130 228 218 182s125-15 202 21 142-8 248-61" />
+						<path d="M-6 232C72 182 139 249 225 209s123-9 199 24 145-8 249-56" />
+						<path d="M1 270C78 223 151 274 234 239s119-4 195 27 146-8 247-51" />
+						<path d="M4 311C83 267 159 301 243 272s119 1 194 29 145-5 245-46" />
+						<path d="M4 355C88 314 170 334 253 310s117 8 191 32 143-2 240-41" />
+						<path d="M0 401C92 365 179 369 263 349s115 16 187 35 141 2 237-34" />
+						<path d="M-8 449C92 416 188 407 272 392s112 23 184 38 139 7 233-24" />
+						<path d="M-18 499C91 470 194 451 282 441s108 28 179 41 137 12 230-15" />
+					</g>
+				</svg>
+				<div class="map-light"></div>
+				<div class="map-scan"></div>
+			</div>
+
+			<div class="gam-radius" aria-hidden="true"><span>GAM</span></div>
+
+			{COVERAGE_PROVINCES.map((province, index) => (
+				<button
+					type="button"
+					class:list={['coverage-area', province.labelClass]}
+					style={`--area-x: ${province.position.x}%; --area-y: ${province.position.y}%; --pulse-delay: ${(index * 0.34).toFixed(2)}s`}
+					data-coverage-area={province.id}
+					aria-controls="coverage-region-panel"
+					aria-expanded="false"
+					aria-label={`Ver cantones de ${province.name}`}
+				>
+					<span class="area-pulse" aria-hidden="true"></span>
+					<span class="area-dot" aria-hidden="true"></span>
+					<span class="area-name"><small>{String(index + 1).padStart(2, '0')}</small>{province.name}</span>
+				</button>
+			))}
+			<p class="map-instruction" data-map-instruction>
+				<span aria-hidden="true"></span> Seleccione una provincia para explorar sus cantones
+			</p>
+
+			<aside
+				class="coverage-panel"
+				id="coverage-region-panel"
+				aria-label="Cantones por provincia"
+				aria-hidden="true"
+				data-coverage-panel
+			>
+				<div class="coverage-panel-top">
+					<p><span></span> Cobertura provincial</p>
+					<button type="button" aria-label="Cerrar detalle de cobertura" data-coverage-close>
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+					</button>
+				</div>
+
+				<div class="coverage-regions" aria-live="polite">
+					{COVERAGE_PROVINCES.map((province) => (
+						<section
+							class="coverage-region"
+							data-coverage-region={province.id}
+							hidden
+						>
+							<p class="region-count">{String(province.cantons.length).padStart(2, '0')} cantones</p>
+							<h3 tabindex="-1">{province.name}</h3>
+							<ul>
+								{province.cantons.map((canton) => <li>{canton}</li>)}
+							</ul>
+						</section>
+					))}
+				</div>
+			</aside>
+		</div>
+	</div>
+
+	<div class="coverage-footer page-shell" data-coverage-reveal>
+		<p>Un solo contacto. <span>Todo un país.</span></p>
+		<div aria-label="Provincias con cobertura">
+			{COVERAGE_PROVINCES.map((province) => <span>{province.name}</span>)}
+		</div>
+	</div>
+</section>
+
+<script>
+	import { initCoverage } from '../../scripts/coverage';
+	initCoverage();
+</script>
+
+<style>
+	.coverage {
+		position: relative;
+		z-index: 3;
+		min-height: 100svh;
+		overflow: clip;
+		border-radius: clamp(1.5rem, 3vw, 3rem) clamp(1.5rem, 3vw, 3rem) 0 0;
+		background: #050b14;
+		box-shadow: 0 -1.5rem 5rem rgba(5, 11, 20, 0.36);
+		color: #f5f8fc;
+		transform-origin: center top;
+	}
+
+	.coverage::before {
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(circle at 67% 42%, rgba(20, 148, 224, 0.12), transparent 29%),
+			linear-gradient(115deg, rgba(8, 19, 34, 0.95), rgba(3, 8, 15, 0.98));
+		content: '';
+	}
+
+	.coverage-grid {
+		position: absolute;
+		inset: 0;
+		opacity: 0.13;
+		background-image:
+			linear-gradient(rgba(119, 198, 245, 0.18) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(119, 198, 245, 0.18) 1px, transparent 1px);
+		background-size: 4.5rem 4.5rem;
+		mask-image: linear-gradient(90deg, transparent, black 45%, black 86%, transparent);
+		pointer-events: none;
+	}
+
+	.coverage-aurora {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(6rem);
+		opacity: 0.16;
+		pointer-events: none;
+	}
+
+	.coverage-aurora-one { top: -14rem; right: 3%; width: 34rem; aspect-ratio: 1; background: #128dd8; }
+	.coverage-aurora-two { bottom: -18rem; left: 16%; width: 26rem; aspect-ratio: 1; background: #136ca9; }
+	.coverage-shell {
+		position: relative;
+		display: grid;
+		min-height: max(48rem, 100svh);
+		grid-template-columns: minmax(22rem, 0.78fr) minmax(34rem, 1.22fr);
+		align-items: center;
+		gap: clamp(2rem, 5vw, 7rem);
+		padding-top: clamp(7rem, 12vh, 10rem);
+		padding-bottom: clamp(6rem, 10vh, 8rem);
+	}
+
+	.coverage-copy { position: relative; z-index: 2; }
+	.coverage-label {
+		display: flex;
+		align-items: center;
+		gap: 0.8rem;
+		margin-bottom: clamp(3.5rem, 8vh, 6rem);
+		font-size: 0.68rem;
+		font-weight: 760;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.coverage-label span {
+		display: grid;
+		width: 2.1rem;
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(138, 215, 255, 0.38);
+		border-radius: 50%;
+		color: #64c7ff;
+		font-size: 0.62rem;
+	}
+
+	.coverage-label p { margin: 0; }
+	.coverage-kicker {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		margin: 0 0 1.35rem;
+		color: rgba(226, 237, 247, 0.54);
+		font-size: 0.64rem;
+		font-weight: 750;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.coverage-kicker i {
+		width: 0.35rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: #72ffad;
+		box-shadow: 0 0 0.9rem rgba(114, 255, 173, 0.75);
+	}
+
+	.coverage-copy h2 {
+		margin: 0;
+		font-size: clamp(4.2rem, 6.4vw, 7.1rem);
+		font-weight: 510;
+		letter-spacing: -0.075em;
+		line-height: 0.88;
+	}
+
+	.coverage-copy h2 span { color: #31adf6; text-shadow: 0 0 2.5rem rgba(49, 173, 246, 0.18); }
+	.coverage-description {
+		max-width: 34rem;
+		margin: clamp(2rem, 4vh, 3rem) 0 0;
+		color: rgba(226, 237, 247, 0.62);
+		font-size: clamp(0.94rem, 1.1vw, 1.08rem);
+		line-height: 1.75;
+	}
+
+	.coverage-actions {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.25rem, 3vw, 2.5rem);
+		margin-top: clamp(2.25rem, 5vh, 3.5rem);
+	}
+
+	.coverage-actions > a {
+		display: inline-flex;
+		min-height: 3.6rem;
+		align-items: center;
+		gap: 1.3rem;
+		border: 1px solid rgba(86, 196, 255, 0.44);
+		border-radius: 999px;
+		background: rgba(20, 143, 215, 0.12);
+		padding: 0.8rem 1.35rem 0.8rem 1.55rem;
+		font-size: 0.68rem;
+		font-weight: 780;
+		letter-spacing: 0.08em;
+		text-decoration: none;
+		text-transform: uppercase;
+		backdrop-filter: blur(12px);
+		transition: border-color 220ms ease, background-color 220ms ease, transform 220ms ease;
+	}
+
+	.coverage-actions > a:hover { transform: translateY(-2px); border-color: #58c5ff; background: rgba(20, 143, 215, 0.22); }
+	.coverage-actions svg {
+		width: 1.1rem;
+		fill: none;
+		stroke: #64c7ff;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.6;
+	}
+
+	.coverage-actions > p { display: grid; gap: 0.2rem; margin: 0; }
+	.coverage-actions strong { font-size: 0.72rem; font-weight: 720; letter-spacing: 0.05em; }
+	.coverage-actions p span { color: rgba(226, 237, 247, 0.42); font-size: 0.64rem; }
+	.coverage-visual {
+		--pointer-x: 50%;
+		--pointer-y: 50%;
+		position: relative;
+		width: 100%;
+		aspect-ratio: 1.08;
+		isolation: isolate;
+		filter: drop-shadow(0 2rem 4rem rgba(0, 0, 0, 0.28));
+	}
+
+	.coverage-visual::before {
+		position: absolute;
+		inset: 7%;
+		z-index: -2;
+		border-radius: 50%;
+		background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(48, 176, 247, 0.22), rgba(8, 39, 66, 0.09) 45%, transparent 71%);
+		filter: blur(1rem);
+		content: '';
+	}
+
+	.map-land {
+		position: absolute;
+		inset: 7% 2%;
+		z-index: 1;
+		overflow: hidden;
+		background:
+			radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(126, 219, 255, 0.98), rgba(30, 153, 221, 0.7) 16%, rgba(15, 64, 101, 0.72) 45%, rgba(7, 26, 43, 0.9) 74%),
+			linear-gradient(135deg, #1695d8, #071521);
+		-webkit-mask: var(--map-mask) center / contain no-repeat;
+		mask: var(--map-mask) center / contain no-repeat;
+		will-change: transform;
+	}
+
+	.map-land::before {
+		position: absolute;
+		inset: 0;
+		opacity: 0.34;
+		background-image:
+			linear-gradient(rgba(181, 229, 255, 0.13) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(181, 229, 255, 0.13) 1px, transparent 1px);
+		background-size: 2.3rem 2.3rem;
+		content: '';
+	}
+
+	.topography {
+		position: absolute;
+		inset: -4%;
+		width: 108%;
+		height: 108%;
+		fill: none;
+		stroke: rgba(196, 237, 255, 0.26);
+		stroke-width: 1.25;
+		vector-effect: non-scaling-stroke;
+	}
+
+	.topography g { animation: drift-topography 13s ease-in-out infinite alternate; }
+	.map-light {
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(208, 245, 255, 0.26), transparent 25%);
+		mix-blend-mode: screen;
+	}
+
+	.map-scan {
+		position: absolute;
+		top: -18%;
+		right: 0;
+		left: 0;
+		height: 18%;
+		background: linear-gradient(180deg, transparent, rgba(151, 226, 255, 0.2), transparent);
+		animation: scan-map 6.5s linear infinite;
+	}
+
+	.map-orbit { position: absolute; z-index: 0; border: 1px solid rgba(102, 194, 244, 0.13); border-radius: 50%; pointer-events: none; }
+	.map-orbit::before,
+	.map-orbit::after {
+		position: absolute;
+		width: 0.36rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: #49bdfb;
+		box-shadow: 0 0 1rem rgba(73, 189, 251, 0.75);
+		content: '';
+	}
+
+	.map-orbit-outer { inset: 3%; transform: rotate(-11deg); }
+	.map-orbit-outer::before { top: 17%; right: 8%; }
+	.map-orbit-outer::after { bottom: 14%; left: 10%; }
+	.map-orbit-inner { inset: 13%; transform: rotate(9deg); }
+	.map-orbit-inner::before { top: 4%; left: 31%; }
+	.map-orbit-inner::after { right: 6%; bottom: 27%; }
+	.map-coordinate {
+		position: absolute;
+		z-index: 3;
+		color: rgba(167, 206, 229, 0.36);
+		font-size: 0.58rem;
+		font-weight: 650;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+	}
+
+	.coordinate-top { top: 3%; left: 18%; }
+	.coordinate-bottom { right: 11%; bottom: 4%; }
+	.gam-radius {
+		position: absolute;
+		top: 42%;
+		left: 50%;
+		z-index: 2;
+		display: grid;
+		width: 18%;
+		aspect-ratio: 1;
+		place-items: center;
+		transform: translate(-50%, -50%);
+		border: 1px solid rgba(112, 207, 255, 0.25);
+		border-radius: 50%;
+		background: rgba(23, 142, 207, 0.05);
+		box-shadow: 0 0 2.8rem rgba(38, 171, 240, 0.2), inset 0 0 2rem rgba(38, 171, 240, 0.08);
+	}
+
+	.gam-radius::before,
+	.gam-radius::after {
+		position: absolute;
+		inset: -18%;
+		border: 1px solid rgba(112, 207, 255, 0.15);
+		border-radius: inherit;
+		content: '';
+		animation: radius-pulse 3s ease-out infinite;
+	}
+
+	.gam-radius::after { animation-delay: 1.5s; }
+	.gam-radius span { color: rgba(220, 245, 255, 0.74); font-size: clamp(0.45rem, 0.6vw, 0.62rem); font-weight: 800; letter-spacing: 0.16em; }
+	.coverage-area {
+		position: absolute;
+		top: var(--area-y);
+		left: var(--area-x);
+		z-index: 4;
+		width: 0.82rem;
+		aspect-ratio: 1;
+		transform: translate(-50%, -50%);
+		border: 0;
+		background: transparent;
+		padding: 0;
+		color: inherit;
+		cursor: pointer;
+	}
+
+	.coverage-area::before {
+		position: absolute;
+		inset: -0.75rem;
+		border: 1px solid transparent;
+		border-radius: 50%;
+		content: '';
+		transition: border-color 180ms ease, background-color 180ms ease;
+	}
+
+	.coverage-area:is(:hover, :focus-visible, .is-active)::before {
+		border-color: rgba(126, 219, 255, 0.42);
+		background: rgba(34, 166, 236, 0.14);
+	}
+
+	.coverage-area:focus-visible { outline: none; }
+	.area-dot {
+		position: absolute;
+		inset: 0;
+		border: 2px solid #dff7ff;
+		border-radius: 50%;
+		background: #2bb2fb;
+		box-shadow: 0 0 0.9rem rgba(43, 178, 251, 0.85);
+		transition: transform 180ms ease, background-color 180ms ease;
+	}
+
+	.coverage-area:is(:hover, :focus-visible, .is-active) .area-dot {
+		transform: scale(1.35);
+		background: #8bdeff;
+	}
+
+	.area-pulse {
+		position: absolute;
+		inset: -0.5rem;
+		border: 1px solid rgba(107, 209, 255, 0.58);
+		border-radius: 50%;
+		animation: area-pulse 2.6s var(--pulse-delay) ease-out infinite;
+	}
+
+	.area-name {
+		position: absolute;
+		color: #f5fbff;
+		font-size: clamp(0.58rem, 0.72vw, 0.72rem);
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		text-shadow: 0 1px 0.7rem #02070d;
+		white-space: nowrap;
+		transition: color 180ms ease, opacity 180ms ease;
+	}
+
+	.area-name small { margin-right: 0.4rem; color: #55c5ff; font-size: 0.48rem; font-weight: 800; }
+	.coverage-area:is(:hover, :focus-visible, .is-active) .area-name { color: #8bdeff; }
+	.label-left-top .area-name { right: 1.05rem; bottom: 0.85rem; }
+	.label-right-top .area-name { bottom: 0.85rem; left: 1.05rem; }
+	.label-left-bottom .area-name { top: 1rem; right: 1.05rem; }
+	.label-right-bottom .area-name { top: 1rem; left: 1.05rem; }
+
+	.map-instruction {
+		position: absolute;
+		right: 8%;
+		bottom: 6%;
+		z-index: 4;
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		margin: 0;
+		color: rgba(206, 231, 246, 0.48);
+		font-size: 0.56rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		transition: opacity 180ms ease;
+	}
+
+	.map-instruction span {
+		width: 0.36rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: #5ccaff;
+		box-shadow: 0 0 0.75rem rgba(92, 202, 255, 0.8);
+	}
+
+	.coverage-panel {
+		position: absolute;
+		right: 2%;
+		bottom: 3%;
+		z-index: 8;
+		width: min(20rem, 46%);
+		max-height: 24rem;
+		overflow: hidden;
+		transform: translateY(1rem) scale(0.97);
+		transform-origin: right bottom;
+		border: 1px solid rgba(132, 210, 250, 0.25);
+		border-radius: 1.35rem;
+		background: rgba(5, 15, 27, 0.9);
+		box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.42), inset 0 1px rgba(255, 255, 255, 0.04);
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		backdrop-filter: blur(24px);
+		transition: opacity 220ms ease, transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1), visibility 220ms ease;
+	}
+
+	.coverage-panel.is-open {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+
+	.coverage-panel-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border-bottom: 1px solid rgba(132, 210, 250, 0.13);
+		padding: 0.8rem 0.85rem 0.8rem 1rem;
+	}
+
+	.coverage-panel-top > p {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0;
+		color: rgba(222, 241, 252, 0.54);
+		font-size: 0.54rem;
+		font-weight: 750;
+		letter-spacing: 0.11em;
+		text-transform: uppercase;
+	}
+
+	.coverage-panel-top > p span {
+		width: 0.34rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: #70ffac;
+		box-shadow: 0 0 0.7rem rgba(112, 255, 172, 0.65);
+	}
+
+	.coverage-panel-top button {
+		display: grid;
+		width: 2rem;
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(151, 207, 239, 0.18);
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.03);
+		color: rgba(237, 248, 255, 0.72);
+		cursor: pointer;
+	}
+
+	.coverage-panel-top svg { width: 0.85rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.6; }
+	.coverage-regions {
+		max-height: 19.6rem;
+		overflow: auto;
+		padding: 1.25rem;
+		scrollbar-color: rgba(92, 202, 255, 0.42) transparent;
+		scrollbar-width: thin;
+	}
+
+	.coverage-region[hidden] { display: none; }
+	.region-count {
+		margin: 0 0 0.45rem;
+		color: #56c6ff;
+		font-size: 0.54rem;
+		font-weight: 780;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.coverage-region h3 {
+		margin: 0;
+		font-size: clamp(1.7rem, 2.4vw, 2.35rem);
+		font-weight: 560;
+		letter-spacing: -0.05em;
+		line-height: 1;
+	}
+
+	.coverage-region h3:focus { outline: none; }
+	.coverage-region ul {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.55rem 0.8rem;
+		margin: 1.15rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.coverage-region li {
+		display: flex;
+		align-items: baseline;
+		gap: 0.4rem;
+		color: rgba(224, 239, 248, 0.68);
+		font-size: 0.65rem;
+		line-height: 1.25;
+	}
+
+	.coverage-region li::before {
+		width: 0.23rem;
+		aspect-ratio: 1;
+		flex: 0 0 auto;
+		border-radius: 50%;
+		background: #2daef2;
+		content: '';
+	}
+	.coverage-footer {
+		position: relative;
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 2rem;
+		border-top: 1px solid rgba(151, 207, 239, 0.14);
+		padding-top: clamp(2.5rem, 5vw, 4.5rem);
+		padding-bottom: clamp(4.5rem, 8vw, 8rem);
+	}
+
+	.coverage-footer > p { margin: 0; font-size: clamp(2.2rem, 4.2vw, 4.8rem); font-weight: 510; letter-spacing: -0.06em; line-height: 1; }
+	.coverage-footer > p span { color: #2aaaf1; }
+	.coverage-footer > div { display: flex; max-width: 28rem; flex-wrap: wrap; justify-content: flex-end; gap: 0.55rem; }
+	.coverage-footer > div span {
+		border: 1px solid rgba(151, 207, 239, 0.18);
+		border-radius: 999px;
+		padding: 0.6rem 0.85rem;
+		color: rgba(226, 237, 247, 0.58);
+		font-size: 0.62rem;
+		font-weight: 680;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	@keyframes drift-topography { to { transform: translate3d(1.6rem, -0.8rem, 0); } }
+	@keyframes scan-map { to { transform: translateY(750%); } }
+	@keyframes radius-pulse {
+		0% { transform: scale(0.7); opacity: 0; }
+		25% { opacity: 0.8; }
+		100% { transform: scale(1.25); opacity: 0; }
+	}
+
+	@keyframes area-pulse {
+		0% { transform: scale(0.35); opacity: 0; }
+		30% { opacity: 0.8; }
+		100% { transform: scale(1.35); opacity: 0; }
+	}
+
+	@media (max-width: 68rem) {
+		.coverage-shell { grid-template-columns: minmax(19rem, 0.8fr) minmax(28rem, 1.2fr); gap: 1.5rem; }
+		.coverage-copy h2 { font-size: clamp(4rem, 7vw, 6rem); }
+	}
+
+	@media (max-width: 56.25rem) {
+		.coverage { border-radius: 1.5rem 1.5rem 0 0; }
+		.coverage-grid { background-size: 3.5rem 3.5rem; mask-image: linear-gradient(180deg, transparent, black 20%, black 75%, transparent); }
+		.coverage-shell { min-height: auto; grid-template-columns: 1fr; gap: 1.5rem; padding-top: 7rem; padding-bottom: 4rem; }
+		.coverage-label { margin-bottom: 3.5rem; }
+		.coverage-copy { max-width: 42rem; }
+		.coverage-copy h2 { font-size: clamp(4rem, 13vw, 7rem); }
+		.coverage-description { max-width: 39rem; }
+		.coverage-visual { width: min(100%, 45rem); margin-inline: auto; }
+		.coverage-panel { right: 5%; bottom: 2%; width: 90%; max-height: 24rem; transform-origin: center bottom; }
+		.coverage-regions { max-height: 19.6rem; }
+		.coverage-footer { align-items: flex-start; flex-direction: column; }
+		.coverage-footer > div { justify-content: flex-start; }
+	}
+
+	@media (max-width: 35rem) {
+		.coverage-shell { padding-bottom: 2rem; }
+		.coverage-copy h2 { font-size: clamp(3.6rem, 17vw, 5.4rem); }
+		.coverage-actions { align-items: flex-start; flex-direction: column; }
+		.coverage-actions > a { width: 100%; justify-content: space-between; }
+		.coverage-visual { width: 116%; margin-left: -8%; }
+		.map-coordinate { display: none; }
+		.gam-radius { width: 22%; }
+		.area-name { opacity: 0; }
+		.area-name small { display: none; }
+		.coverage-area:is(:focus-visible, .is-active) .area-name { opacity: 1; }
+		.map-instruction { right: 50%; bottom: 1%; width: max-content; max-width: 72%; transform: translateX(50%); text-align: center; }
+		.coverage-panel { right: 8%; bottom: 2%; width: 84%; border-radius: 1.15rem; }
+		.coverage-region ul { gap: 0.5rem 0.65rem; }
+		.coverage-footer { padding-top: 3rem; padding-bottom: 5rem; }
+		.coverage-footer > p { max-width: 11ch; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.topography g,
+		.map-scan,
+		.gam-radius::before,
+		.gam-radius::after,
+		.area-pulse { animation: none; }
+	}
+</style>

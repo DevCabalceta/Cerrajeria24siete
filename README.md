@@ -8,10 +8,10 @@ El proyecto se construye de forma incremental y cada sección pasa por revisión
 
 | Entrega | Alcance | Estado |
 | --- | --- | --- |
-| 01 | Sistema base, navegación responsive, menú fullscreen unificado y Hero fotográfico full-bleed | En revisión |
-| 02 | Arquitectura narrativa de servicios | Pendiente de aprobación |
-| 03 | Emergencias 24/7 y categorías de servicio | Pendiente |
-| 04 | Experiencia, razones para elegirnos y cobertura | Pendiente |
+| 01 | Sistema base, navegación responsive, menú fullscreen con CTAs y Hero fotográfico full-bleed | Aprobada |
+| 02 | Servicios con narrativa horizontal y transición cinematográfica entre secciones | Aprobada |
+| 03 | Cobertura nacional con mapa interactivo de 7 provincias y 84 cantones | En revisión |
+| 04 | Experiencia y razones para elegirnos | Pendiente |
 | 05 | Trabajos, preguntas frecuentes y CTA final | Pendiente |
 | 06 | Contacto, footer, botones flotantes y auditoría final | Pendiente |
 
@@ -75,11 +75,15 @@ La información repetitiva de contacto, cobertura y navegación vive en `src/dat
 - Contenido empresarial basado exclusivamente en las fuentes públicas de Cerrajería24siete.
 - SEO local sin datos inventados.
 
+Las transiciones entre secciones utilizan el atributo reutilizable `data-section-panel`: la sección anterior reduce escala, opacidad y nitidez mientras entra la siguiente. Servicios emplea una narrativa horizontal con ScrollTrigger en escritorio y una composición vertical sin fijación en móvil. En escritorio, su panel fijado se separa temporalmente del ancestro transformado para mantenerlo sincronizado con el viewport y evitar vibraciones durante el scroll. Cobertura conserva sus propios timelines y ScrollTriggers en un contexto independiente, con iluminación reactiva, siete puntos provinciales y un panel accesible para explorar sus 84 cantones; las animaciones se desactivan cuando el usuario prefiere movimiento reducido, sin perder la interacción.
+
 ## Fuentes de contenido
 
 - Sitio actual: [cerrajeria24siete.com](https://cerrajeria24siete.com/)
+- División territorial oficial: [Instituto Geográfico Nacional, DTA 2026](https://www.snitcr.go.cr/pdfs/ign_repositorio/DTA-TABLA%20POR%20PROVINCIA-CANT%C3%93N-DISTRITO%202026.pdf)
 - Referencia competitiva: [cerrajeriameza.com](https://cerrajeriameza.com/)
 - Referencia de interacción: Alianza 360 de CEDES Don Bosco
+- Referencia visual para Cobertura: [Luminous Topography en 21st.dev](https://21st.dev/rmahammad/luminous-topography/default)
 
 Las referencias se utilizan para investigación de contenido y UX; el diseño y el código son originales para Cerrajería24siete.
 
