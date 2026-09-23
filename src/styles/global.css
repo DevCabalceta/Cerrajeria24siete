@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+
+@font-face {
+	font-family: 'Manrope Variable';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 200 800;
+	src: url('@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2-variations');
+}
+
+@theme {
+	--font-sans: 'Manrope Variable', 'Segoe UI', sans-serif;
+	--color-ink: #07090d;
+	--color-panel: #0d1118;
+	--color-line: #202938;
+	--color-electric: #20a4ff;
+	--color-electric-light: #8ad7ff;
+	--color-signal: #91ffb6;
+	--color-mist: #aeb8c8;
+}
+
+:root {
+	color-scheme: dark;
+	font-family: var(--font-sans);
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	--page-gutter: clamp(1.25rem, 4vw, 4.5rem);
+	--content-width: 90rem;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+	background: var(--color-ink);
+}
+
+body {
+	margin: 0;
+	min-width: 20rem;
+	min-height: 100%;
+	overflow-x: clip;
+	background: var(--color-ink);
+	color: #f7f9fc;
+}
+
+body.menu-open {
+	overflow: hidden;
+}
+
+button,
+a {
+	-webkit-tap-highlight-color: transparent;
+}
+
+button {
+	font: inherit;
+}
+
+a {
+	color: inherit;
+}
+
+::selection {
+	background: color-mix(in srgb, var(--color-electric) 65%, transparent);
+	color: white;
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-electric-light);
+	outline-offset: 4px;
+}
+
+.page-shell {
+	width: min(100%, var(--content-width));
+	margin-inline: auto;
+	padding-inline: var(--page-gutter);
+}
+
+.skip-link {
+	position: fixed;
+	top: 1rem;
+	left: 1rem;
+	z-index: 1000;
+	transform: translateY(-200%);
+	border-radius: 999px;
+	background: white;
+	padding: 0.75rem 1rem;
+	color: var(--color-ink);
+	font-size: 0.875rem;
+	font-weight: 700;
+	transition: transform 180ms ease;
+}
+
+.skip-link:focus {
+	transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

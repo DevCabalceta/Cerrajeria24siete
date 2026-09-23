@@ -1,0 +1,376 @@
+---
+import { NAVIGATION_ITEMS, SITE } from '../../data/site';
+---
+
+<header class="site-header" data-site-header>
+	<div class="header-shell page-shell">
+		<a class="brand" href="#inicio" aria-label={`${SITE.name}, ir al inicio`}>
+			<span class="brand-mark" aria-hidden="true">
+				<svg viewBox="0 0 38 38" role="img">
+					<path d="M19 2.5a9.3 9.3 0 0 0-5.4 16.9v13.1l5.4 3 5.4-3v-3.8l-2.1-1.8 2.1-2.2v-5.3A9.3 9.3 0 0 0 19 2.5Zm0 5.5a3.7 3.7 0 1 1 0 7.4A3.7 3.7 0 0 1 19 8Z" />
+				</svg>
+			</span>
+			<span class="brand-copy">
+				<span class="brand-name">Cerrajería</span>
+				<span class="brand-number">24SIETE</span>
+			</span>
+		</a>
+
+		<nav class="desktop-nav" aria-label="Navegación principal">
+			<ul>
+				{NAVIGATION_ITEMS.map((item) => (
+					<li><a href={item.href}>{item.label}</a></li>
+				))}
+			</ul>
+		</nav>
+
+		<div class="desktop-actions">
+			<a class="phone-link" href={SITE.phone.href} aria-label={`Llamar al ${SITE.phone.display}`}>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M8.4 3.5 6.7 2.9a2 2 0 0 0-2.4 1.2l-.8 2.1c-.4 1-.3 2.1.2 3.1 2.2 4.4 5.8 8 10.2 10.2 1 .5 2.1.6 3.1.2l2.1-.8a2 2 0 0 0 1.2-2.4l-.6-1.7a2 2 0 0 0-2.2-1.3l-2.2.4a1.9 1.9 0 0 1-1.7-.5l-3-3a1.9 1.9 0 0 1-.5-1.7l.4-2.2a2 2 0 0 0-1.3-2.2Z" />
+				</svg>
+				<span>{SITE.phone.display}</span>
+			</a>
+			<a class="header-cta" href={SITE.whatsapp.href} target="_blank" rel="noreferrer">
+				{SITE.whatsapp.label}
+			</a>
+		</div>
+
+		<button
+			class="menu-toggle"
+			type="button"
+			aria-label="Abrir menú"
+			aria-controls="mobile-menu"
+			aria-expanded="false"
+			data-menu-toggle
+		>
+			<span></span>
+			<span></span>
+		</button>
+	</div>
+</header>
+
+<div
+	class="mobile-menu"
+	id="mobile-menu"
+	aria-hidden="true"
+	inert
+	data-mobile-menu
+>
+	<div class="menu-ambient" aria-hidden="true"></div>
+	<div class="mobile-menu-inner page-shell">
+		<div class="mobile-menu-top">
+			<span class="menu-eyebrow"><i></i> Atención disponible 24/7</span>
+			<span class="menu-location">Costa Rica</span>
+		</div>
+
+		<nav aria-label="Navegación móvil">
+			<ol>
+				{NAVIGATION_ITEMS.map((item, index) => (
+					<li data-menu-item>
+						<a href={item.href} data-menu-link>
+							<span>{String(index + 1).padStart(2, '0')}</span>
+							{item.label}
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 17 10-10M8 7h9v9" /></svg>
+						</a>
+					</li>
+				))}
+			</ol>
+		</nav>
+
+		<div class="mobile-menu-footer" data-menu-footer>
+			<a href={SITE.phone.href}>{SITE.phone.display}</a>
+			<a href={SITE.whatsapp.href} target="_blank" rel="noreferrer">WhatsApp</a>
+			<a href={`mailto:${SITE.email}`}>Correo</a>
+		</div>
+	</div>
+</div>
+
+<script>
+	import { initNavigation } from '../../scripts/navigation';
+	initNavigation();
+</script>
+
+<style>
+	.site-header {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: 100;
+		padding-block: 1.1rem;
+		transition: padding 300ms ease;
+	}
+
+	.site-header::before {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border-bottom: 1px solid transparent;
+		background: rgba(7, 9, 13, 0);
+		backdrop-filter: blur(0);
+		content: '';
+		transition: background 300ms ease, border-color 300ms ease, backdrop-filter 300ms ease;
+	}
+
+	.site-header.is-scrolled { padding-block: 0.7rem; }
+
+	.site-header.is-scrolled::before {
+		border-color: rgba(255, 255, 255, 0.08);
+		background: rgba(7, 9, 13, 0.78);
+		backdrop-filter: blur(20px);
+	}
+
+	.site-header.is-menu-open::before {
+		border-color: transparent;
+		background: #080b10;
+		backdrop-filter: none;
+	}
+
+	.header-shell {
+		display: flex;
+		min-height: 3.25rem;
+		align-items: center;
+		justify-content: space-between;
+		gap: 2rem;
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.7rem;
+		text-decoration: none;
+	}
+
+	.brand-mark {
+		display: grid;
+		width: 2.4rem;
+		aspect-ratio: 1;
+		place-items: center;
+		border: 1px solid rgba(138, 215, 255, 0.42);
+		border-radius: 50%;
+		background: rgba(32, 164, 255, 0.1);
+		box-shadow: inset 0 0 1rem rgba(32, 164, 255, 0.08);
+	}
+
+	.brand-mark svg { width: 1.42rem; fill: var(--color-electric-light); }
+
+	.brand-copy {
+		display: flex;
+		align-items: baseline;
+		font-weight: 750;
+		letter-spacing: -0.04em;
+		line-height: 1;
+	}
+
+	.brand-name { font-size: 1rem; }
+	.brand-number {
+		margin-left: 0.28rem;
+		color: var(--color-electric-light);
+		font-size: 0.78rem;
+		letter-spacing: 0.03em;
+	}
+
+	.desktop-nav ul,
+	.mobile-menu ol { margin: 0; padding: 0; list-style: none; }
+	.desktop-nav ul {
+		display: flex;
+		align-items: center;
+		gap: clamp(1.25rem, 2.3vw, 2.5rem);
+	}
+
+	.desktop-nav a {
+		position: relative;
+		color: rgba(247, 249, 252, 0.68);
+		font-size: 0.76rem;
+		font-weight: 650;
+		letter-spacing: 0.04em;
+		text-decoration: none;
+		transition: color 180ms ease;
+	}
+
+	.desktop-nav a::after {
+		position: absolute;
+		right: 0;
+		bottom: -0.55rem;
+		left: 0;
+		height: 1px;
+		transform: scaleX(0);
+		transform-origin: right;
+		background: var(--color-electric-light);
+		content: '';
+		transition: transform 240ms ease;
+	}
+
+	.desktop-nav a:hover,
+	.desktop-nav a:focus-visible { color: white; }
+	.desktop-nav a:hover::after,
+	.desktop-nav a:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+
+	.desktop-actions { display: flex; align-items: center; gap: 1.1rem; }
+	.phone-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.phone-link svg {
+		width: 1rem;
+		fill: none;
+		stroke: var(--color-electric-light);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.65;
+	}
+
+	.header-cta {
+		border-radius: 999px;
+		background: #f7f9fc;
+		padding: 0.78rem 1.1rem;
+		color: var(--color-ink);
+		font-size: 0.74rem;
+		font-weight: 800;
+		text-decoration: none;
+		transition: background 180ms ease, transform 180ms ease;
+	}
+
+	.header-cta:hover { transform: translateY(-2px); background: var(--color-electric-light); }
+	.menu-toggle {
+		display: none;
+		position: relative;
+		width: 3rem;
+		aspect-ratio: 1;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid rgba(255, 255, 255, 0.16);
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.04);
+		color: white;
+		cursor: pointer;
+	}
+
+	.menu-toggle span {
+		position: absolute;
+		width: 1rem;
+		height: 1px;
+		background: currentColor;
+		transition: transform 300ms ease;
+	}
+
+	.menu-toggle span:first-child { transform: translateY(-0.2rem); }
+	.menu-toggle span:last-child { transform: translateY(0.2rem); }
+	.menu-toggle[aria-expanded='true'] span:first-child { transform: rotate(45deg); }
+	.menu-toggle[aria-expanded='true'] span:last-child { transform: rotate(-45deg); }
+
+	.mobile-menu {
+		position: fixed;
+		inset: 0;
+		z-index: 90;
+		visibility: hidden;
+		overflow-y: auto;
+		background: #080b10;
+	}
+
+	.menu-ambient {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(125deg, transparent 45%, rgba(255, 255, 255, 0.018));
+		pointer-events: none;
+	}
+
+	.menu-ambient::after {
+		position: absolute;
+		inset: 0;
+		background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+		background-size: 4rem 4rem;
+		mask-image: linear-gradient(to bottom, black, transparent 80%);
+		content: '';
+	}
+
+	.mobile-menu-inner {
+		position: relative;
+		display: flex;
+		min-height: 100dvh;
+		flex-direction: column;
+		padding-top: 6.25rem;
+		padding-bottom: 2rem;
+	}
+
+	.mobile-menu-top,
+	.mobile-menu-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		color: rgba(247, 249, 252, 0.48);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.menu-eyebrow { display: inline-flex; align-items: center; gap: 0.55rem; }
+	.menu-eyebrow i {
+		width: 0.38rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: var(--color-signal);
+		box-shadow: 0 0 1rem var(--color-signal);
+	}
+
+	.mobile-menu nav {
+		display: grid;
+		flex: 1;
+		align-content: start;
+		padding-block: clamp(2rem, 5vh, 3.25rem) 1.5rem;
+	}
+
+	.mobile-menu li { overflow: hidden; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+	.mobile-menu li:first-child { border-top: 1px solid rgba(255, 255, 255, 0.1); }
+	.mobile-menu nav a {
+		display: grid;
+		grid-template-columns: 2rem 1fr auto;
+		align-items: center;
+		gap: 0.5rem;
+		padding-block: clamp(0.8rem, 2.1vh, 1.3rem);
+		font-size: clamp(2rem, 8vw, 4.3rem);
+		font-weight: 570;
+		letter-spacing: -0.055em;
+		line-height: 1;
+		text-decoration: none;
+	}
+
+	.mobile-menu nav a > span {
+		align-self: start;
+		padding-top: 0.32rem;
+		color: var(--color-electric-light);
+		font-size: 0.62rem;
+		font-weight: 750;
+		letter-spacing: 0.08em;
+	}
+
+	.mobile-menu nav svg {
+		width: clamp(1.2rem, 4vw, 2rem);
+		fill: none;
+		stroke: rgba(255, 255, 255, 0.4);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.25;
+	}
+
+	.mobile-menu-footer { justify-content: flex-start; gap: 1.5rem; text-transform: none; }
+	.mobile-menu-footer a { text-decoration: none; }
+
+	@media (max-width: 68rem) {
+		.desktop-nav, .desktop-actions { display: none; }
+		.menu-toggle { display: inline-flex; }
+	}
+
+	@media (max-width: 36rem) {
+		.site-header { padding-block: 0.85rem; }
+		.brand-mark { width: 2.25rem; }
+		.brand-name { font-size: 0.9rem; }
+		.brand-number { font-size: 0.68rem; }
+		.mobile-menu-footer { flex-wrap: wrap; gap: 0.75rem 1.25rem; }
+	}
+</style>

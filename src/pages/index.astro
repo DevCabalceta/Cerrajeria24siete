@@ -1,11 +1,23 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import HeroSection from '../components/sections/HeroSection.astro';
+import SiteHeader from '../components/navigation/SiteHeader.astro';
+import heroImage from '../assets/images/hero/key-cutting-workshop.png';
+import { getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const optimizedSocialImage = await getImage({
+	src: heroImage,
+	width: 1200,
+	height: 630,
+	format: 'jpg',
+	quality: 80,
+});
+const socialImage = new URL(optimizedSocialImage.src, Astro.site).toString();
 ---
 
-<Layout>
-	<Welcome />
+<Layout image={socialImage}>
+	<SiteHeader />
+	<main id="contenido">
+		<HeroSection />
+	</main>
 </Layout>
