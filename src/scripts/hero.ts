@@ -16,43 +16,45 @@ export function initHero(): MotionCleanup {
 		return () => delete hero.dataset.ready;
 	}
 
+	const isMobile = window.matchMedia(MOTION_MEDIA.sectionMobile).matches;
+	const entranceY = (value: number) => isMobile ? {} : { y: value, force3D: false };
 	const responsive = gsap.matchMedia();
 	const context = gsap.context(() => {
-		gsap.set(eyebrow, { autoAlpha: 0, y: 14 });
-		gsap.set(lines, { autoAlpha: 0, y: 16 });
-		gsap.set(description, { autoAlpha: 0, y: 18 });
-		gsap.set(actions, { autoAlpha: 0, y: 16 });
-		gsap.set(support, { autoAlpha: 0, y: 12 });
+		gsap.set(eyebrow, { autoAlpha: 0, ...entranceY(14) });
+		gsap.set(lines, { autoAlpha: 0, ...entranceY(16) });
+		gsap.set(description, { autoAlpha: 0, ...entranceY(18) });
+		gsap.set(actions, { autoAlpha: 0, ...entranceY(16) });
+		gsap.set(support, { autoAlpha: 0, ...entranceY(12) });
 
 		gsap.timeline({ defaults: { ease: 'power3.out' } })
 			.to(eyebrow, {
 				autoAlpha: 1,
-				y: 0,
+				...entranceY(0),
 				duration: 0.55,
 				clearProps: 'opacity,transform,visibility',
 			}, 0)
 			.to(lines, {
 				autoAlpha: 1,
-				y: 0,
+				...entranceY(0),
 				duration: 0.72,
 				stagger: 0.085,
 				clearProps: 'opacity,transform,visibility',
 			}, 0.03)
 			.to(description, {
 				autoAlpha: 1,
-				y: 0,
+				...entranceY(0),
 				duration: 0.7,
 				clearProps: 'opacity,transform,visibility',
 			}, 0.28)
 			.to(actions, {
 				autoAlpha: 1,
-				y: 0,
+				...entranceY(0),
 				duration: 0.7,
 				clearProps: 'opacity,transform,visibility',
 			}, 0.4)
 			.to(support, {
 				autoAlpha: 1,
-				y: 0,
+				...entranceY(0),
 				duration: 0.65,
 				stagger: 0.06,
 				clearProps: 'opacity,transform,visibility',

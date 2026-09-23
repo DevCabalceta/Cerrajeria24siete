@@ -19,13 +19,21 @@ export function initSectionTransitions(): MotionCleanup {
 	}
 
 	const responsive = gsap.matchMedia();
+	const transitionSurfaces = new Set<HTMLElement>();
 	const context = gsap.context(() => {
-		const createTransitions = (settings: TransitionSettings) => {
+		const createTransitions = (settings: TransitionSettings, preferBackgroundSurface = false) => {
+			const currentSurfaces = new Set<HTMLElement>();
+
 			panels.slice(0, -1).forEach((panel, index) => {
 				const nextPanel = panels[index + 1];
 				const surface =
+					(preferBackgroundSurface
+						? panel.querySelector<HTMLElement>('[data-section-transition-background]')
+						: null) ??
 					panel.querySelector<HTMLElement>('[data-section-transition-surface]') ?? panel;
 
+				transitionSurfaces.add(surface);
+				currentSurfaces.add(surface);
 				surface.style.transformOrigin = 'center bottom';
 				gsap.to(surface, {
 					scale: settings.scale,
@@ -50,22 +58,31 @@ export function initSectionTransitions(): MotionCleanup {
 					},
 				});
 			});
+
+			return () => {
+				currentSurfaces.forEach((surface) => {
+					surface.classList.remove('is-section-transitioning');
+					surface.style.transformOrigin = '';
+				});
+			};
 		};
 
 		responsive.add(MOTION_MEDIA.sectionDesktop, () => {
-			createTransitions({ scale: 0.92, opacity: 0.28, blur: 12, end: 'top 14%', scrub: 0.65 });
+			return createTransitions({ scale: 0.92, opacity: 0.28, blur: 12, end: 'top 14%', scrub: 0.65 });
 		});
 
 		responsive.add(MOTION_MEDIA.sectionMobile, () => {
-			createTransitions({ scale: 0.96, opacity: 0.42, blur: 5, end: 'top 18%', scrub: 0.5 });
+			return createTransitions(
+				{ scale: 0.96, opacity: 0.42, blur: 5, end: 'top 18%', scrub: 0.5 },
+				true,
+			);
 		});
 	});
 
 	return () => {
 		responsive.revert();
 		context.revert();
-		panels.forEach((panel) => {
-			const surface = panel.querySelector<HTMLElement>('[data-section-transition-surface]') ?? panel;
+		transitionSurfaces.forEach((surface) => {
 			surface.classList.remove('is-section-transitioning');
 			surface.style.transformOrigin = '';
 		});

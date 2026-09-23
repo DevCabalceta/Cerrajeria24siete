@@ -5,7 +5,7 @@ import { SITE } from '../../data/site';
 ---
 
 <section class="hero" id="inicio" aria-labelledby="hero-title" data-hero data-section-panel>
-	<div class="hero-media" data-hero-media>
+	<div class="hero-media" data-hero-media data-section-transition-background>
 		<Image
 			src={heroImage}
 			alt="Profesional trabajando en la confección de una llave"
@@ -298,6 +298,10 @@ import { SITE } from '../../data/site';
 	}
 
 	@media (max-width: 48rem) {
+		:global(html[data-motion='pending']) :is([data-hero-eyebrow], [data-hero-line], [data-hero-description], [data-hero-actions], [data-hero-support]) {
+			transform: none;
+		}
+
 		.hero { min-height: max(46rem, 100svh); }
 		.hero-media :global(img) { object-position: 70% center; }
 		.hero-shade {
