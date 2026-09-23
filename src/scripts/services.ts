@@ -1,11 +1,8 @@
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, hasReducedMotion, MOTION_MEDIA, type MotionCleanup } from './motion';
 
-gsap.registerPlugin(ScrollTrigger);
-
-export function initServices() {
+export function initServices(): MotionCleanup {
 	const section = document.querySelector<HTMLElement>('[data-services]');
-	if (!section || section.dataset.ready === 'true') return;
+	if (!section || section.dataset.ready === 'true') return () => undefined;
 
 	section.dataset.ready = 'true';
 	const scrollArea = section.querySelector<HTMLElement>('[data-services-scroll]');
@@ -16,60 +13,74 @@ export function initServices() {
 	const specializedItems = gsap.utils.toArray<HTMLElement>('[data-specialized-item]', section);
 	const progress = section.querySelector<HTMLElement>('[data-services-progress]');
 	const current = section.querySelector<HTMLElement>('[data-services-current]');
-	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-	if (!scrollArea || !sticky || !track || cards.length === 0) return;
-
-	if (reduceMotion) {
-		section.classList.add('is-static');
-		return;
+	if (!scrollArea || !sticky || !track || cards.length === 0) {
+		return () => delete section.dataset.ready;
 	}
 
+	if (hasReducedMotion()) {
+		section.classList.add('is-static');
+		return () => {
+			section.classList.remove('is-static');
+			delete section.dataset.ready;
+		};
+	}
+
+	const responsive = gsap.matchMedia();
 	const context = gsap.context(() => {
-		gsap.from(introItems, {
-			y: 45,
-			opacity: 0,
+		gsap.set(introItems, { y: 45, opacity: 0 });
+		gsap.set(specializedItems, { y: 24, opacity: 0 });
+
+		gsap.to(introItems, {
+			y: 0,
+			opacity: 1,
 			duration: 0.9,
 			stagger: 0.1,
 			ease: 'power3.out',
+			clearProps: 'opacity,transform',
 			scrollTrigger: {
+				id: 'services-intro',
 				trigger: section,
 				start: 'top 72%',
 				once: true,
 			},
 		});
 
-		const media = gsap.matchMedia();
-
-		media.add('(min-width: 901px)', () => {
+		responsive.add(MOTION_MEDIA.servicesDesktop, () => {
 			const getDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+			const setProgress = progress ? gsap.quickSetter(progress, 'scaleX') : undefined;
+			let activeIndex = 0;
+
 			const horizontalTween = gsap.to(track, {
 				x: () => -getDistance(),
 				ease: 'none',
 				scrollTrigger: {
+					id: 'services-horizontal',
 					trigger: scrollArea,
 					start: 'top top',
 					end: () => `+=${getDistance()}`,
 					pin: sticky,
-					// The section transition transforms the ancestor; reparenting keeps the fixed pin isolated.
-					pinReparent: true,
 					scrub: 0.85,
 					anticipatePin: 1,
 					invalidateOnRefresh: true,
+					onToggle: (self) => {
+						track.style.willChange = self.isActive ? 'transform' : '';
+					},
 					onUpdate: (self) => {
-						if (progress) gsap.set(progress, { scaleX: self.progress });
-						if (current) {
-							const activeIndex = Math.min(
-								cards.length,
-								Math.round(self.progress * (cards.length - 1)) + 1,
-							);
-							current.textContent = String(activeIndex).padStart(2, '0');
+						setProgress?.(self.progress);
+						const nextIndex = Math.min(
+							cards.length,
+							Math.round(self.progress * (cards.length - 1)) + 1,
+						);
+						if (current && nextIndex !== activeIndex) {
+							activeIndex = nextIndex;
+							current.textContent = String(nextIndex).padStart(2, '0');
 						}
 					},
 				},
 			});
 
-			cards.forEach((card) => {
+			cards.forEach((card, index) => {
 				const image = card.querySelector('img');
 				if (!image) return;
 				gsap.fromTo(
@@ -79,7 +90,9 @@ export function initServices() {
 						xPercent: 4,
 						scale: 1.02,
 						ease: 'none',
+						immediateRender: false,
 						scrollTrigger: {
+							id: `service-image-${index + 1}`,
 							trigger: card,
 							containerAnimation: horizontalTween,
 							start: 'left right',
@@ -90,17 +103,23 @@ export function initServices() {
 				);
 			});
 
-			return () => horizontalTween.kill();
+			return () => {
+				track.style.willChange = '';
+				horizontalTween.kill();
+			};
 		});
 
-		media.add('(max-width: 900px)', () => {
-			cards.forEach((card) => {
-				gsap.from(card, {
-					y: 55,
-					opacity: 0,
+		responsive.add(MOTION_MEDIA.servicesMobile, () => {
+			gsap.set(cards, { y: 55, opacity: 0 });
+			cards.forEach((card, index) => {
+				gsap.to(card, {
+					y: 0,
+					opacity: 1,
 					duration: 0.8,
 					ease: 'power3.out',
+					clearProps: 'opacity,transform',
 					scrollTrigger: {
+						id: `service-card-${index + 1}`,
 						trigger: card,
 						start: 'top 84%',
 						once: true,
@@ -109,13 +128,15 @@ export function initServices() {
 			});
 		});
 
-		specializedItems.forEach((item) => {
-			gsap.from(item, {
-				y: 24,
-				opacity: 0,
+		specializedItems.forEach((item, index) => {
+			gsap.to(item, {
+				y: 0,
+				opacity: 1,
 				duration: 0.65,
 				ease: 'power2.out',
+				clearProps: 'opacity,transform',
 				scrollTrigger: {
+					id: `specialized-service-${index + 1}`,
 					trigger: item,
 					start: 'top 88%',
 					once: true,
@@ -124,6 +145,9 @@ export function initServices() {
 		});
 	}, section);
 
-	window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
-	window.addEventListener('pagehide', () => context.revert(), { once: true });
+	return () => {
+		responsive.revert();
+		context.revert();
+		delete section.dataset.ready;
+	};
 }

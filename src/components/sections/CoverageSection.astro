@@ -55,12 +55,13 @@ const coverageWhatsappLink = `${SITE.whatsapp.href.split('?')[0]}?text=${encodeU
 			<div class="map-coordinate coordinate-top" aria-hidden="true">10.0000° N</div>
 			<div class="map-coordinate coordinate-bottom" aria-hidden="true">84.0000° O</div>
 
-			<div
-				class="map-land"
-				style={`--map-mask: url("${mapMask.src}")`}
-				aria-hidden="true"
-			>
-				<svg class="topography" viewBox="0 0 640 580" preserveAspectRatio="none">
+			<div class="map-land-motion" data-coverage-land-reveal aria-hidden="true">
+				<div
+					class="map-land"
+					style={`--map-mask: url("${mapMask.src}")`}
+					data-coverage-land
+				>
+					<svg class="topography" viewBox="0 0 640 580" preserveAspectRatio="none">
 					<g>
 						<path d="M-42 86C54 22 94 152 191 88s133-36 208 17 136 1 244-76" />
 						<path d="M-39 108C50 47 102 170 198 109s130-31 207 18 138-3 249-74" />
@@ -75,9 +76,10 @@ const coverageWhatsappLink = `${SITE.whatsapp.href.split('?')[0]}?text=${encodeU
 						<path d="M-8 449C92 416 188 407 272 392s112 23 184 38 139 7 233-24" />
 						<path d="M-18 499C91 470 194 451 282 441s108 28 179 41 137 12 230-15" />
 					</g>
-				</svg>
-				<div class="map-light"></div>
-				<div class="map-scan"></div>
+					</svg>
+					<div class="map-light"></div>
+					<div class="map-scan"></div>
+				</div>
 			</div>
 
 			<div class="gam-radius" aria-hidden="true"><span>GAM</span></div>
@@ -142,17 +144,26 @@ const coverageWhatsappLink = `${SITE.whatsapp.href.split('?')[0]}?text=${encodeU
 	</div>
 </section>
 
-<script>
-	import { initCoverage } from '../../scripts/coverage';
-	initCoverage();
-</script>
-
 <style>
+	:global(html[data-motion='pending']) [data-coverage-reveal] {
+		opacity: 0;
+		transform: translate3d(0, 42px, 0);
+	}
+
+	:global(html[data-motion='pending']) [data-coverage-land-reveal] {
+		opacity: 0;
+		transform: scale(0.78) rotate(-3deg);
+	}
+
+	:global(html[data-motion='pending']) :is(.map-orbit, .map-coordinate, .gam-radius, [data-coverage-area]) {
+		opacity: 0;
+	}
+
 	.coverage {
 		position: relative;
 		z-index: 3;
 		min-height: 100svh;
-		overflow: clip;
+		overflow: hidden;
 		border-radius: clamp(1.5rem, 3vw, 3rem) clamp(1.5rem, 3vw, 3rem) 0 0;
 		background: #050b14;
 		box-shadow: 0 -1.5rem 5rem rgba(5, 11, 20, 0.36);
@@ -321,17 +332,21 @@ const coverageWhatsappLink = `${SITE.whatsapp.href.split('?')[0]}?text=${encodeU
 		content: '';
 	}
 
-	.map-land {
+	.map-land-motion {
 		position: absolute;
 		inset: 7% 2%;
 		z-index: 1;
+	}
+
+	.map-land {
+		position: absolute;
+		inset: 0;
 		overflow: hidden;
 		background:
 			radial-gradient(circle at var(--pointer-x) var(--pointer-y), rgba(126, 219, 255, 0.98), rgba(30, 153, 221, 0.7) 16%, rgba(15, 64, 101, 0.72) 45%, rgba(7, 26, 43, 0.9) 74%),
 			linear-gradient(135deg, #1695d8, #071521);
 		-webkit-mask: var(--map-mask) center / contain no-repeat;
 		mask: var(--map-mask) center / contain no-repeat;
-		will-change: transform;
 	}
 
 	.map-land::before {

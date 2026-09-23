@@ -66,6 +66,18 @@ src/
 
 La información repetitiva de contacto, cobertura y navegación vive en `src/data/site.ts`. Esto evita inconsistencias entre CTAs, metadatos y secciones.
 
+### Sistema de movimiento
+
+Las animaciones se coordinan desde un único punto de entrada (`src/scripts/page-motion.ts`) y comparten una sola instancia configurada de GSAP y ScrollTrigger (`src/scripts/motion.ts`). Cada sección conserva su propio contexto, sus selectores y sus ScrollTriggers, de modo que Hero, Servicios y Cobertura se pueden inicializar, adaptar por breakpoint y desmontar sin interferencias.
+
+- `hero.ts`: entrada de contenido y parallax fotográfico exclusivo de escritorio.
+- `services.ts`: narrativa horizontal fijada en escritorio y tarjetas verticales en móvil.
+- `coverage.ts`: entrada del mapa, parallax interno e interacción accesible por provincia.
+- `navigation.ts`: menú móvil, foco, historial y cabecera reactiva con listeners desmontables.
+- `section-transitions.ts`: transición visual entre paneles mediante superficies locales, sin transformar contenedores que participan en el cálculo del pin.
+
+Los estados iniciales críticos se declaran antes del primer render mediante `data-motion`. Así se evita el destello de contenido sin animar y se conserva un fallback que muestra la página si JavaScript no llega a inicializarse. La actualización de medidas se realiza una sola vez después de cargar las fuentes; los cálculos dependientes del ancho usan `invalidateOnRefresh` en lugar de registrar múltiples eventos globales.
+
 ## Principios de implementación
 
 - Mobile-first con composiciones específicas para móvil, tablet y escritorio.
@@ -75,7 +87,20 @@ La información repetitiva de contacto, cobertura y navegación vive en `src/dat
 - Contenido empresarial basado exclusivamente en las fuentes públicas de Cerrajería24siete.
 - SEO local sin datos inventados.
 
-Las transiciones entre secciones utilizan el atributo reutilizable `data-section-panel`: la sección anterior reduce escala, opacidad y nitidez mientras entra la siguiente. Servicios emplea una narrativa horizontal con ScrollTrigger en escritorio y una composición vertical sin fijación en móvil. En escritorio, su panel fijado se separa temporalmente del ancestro transformado para mantenerlo sincronizado con el viewport y evitar vibraciones durante el scroll. Cobertura conserva sus propios timelines y ScrollTriggers en un contexto independiente, con iluminación reactiva, siete puntos provinciales y un panel accesible para explorar sus 84 cantones; las animaciones se desactivan cuando el usuario prefiere movimiento reducido, sin perder la interacción.
+Las transiciones entre secciones utilizan el atributo reutilizable `data-section-panel`: la sección anterior reduce escala, opacidad y nitidez mientras entra la siguiente. Cuando una sección contiene pinning o una altura narrativa extensa, `data-section-transition-surface` limita el efecto a su contenido visual y mantiene intacto el flujo que ScrollTrigger utiliza para calcular el scroll. Servicios emplea una narrativa horizontal con pin nativo en escritorio y una composición vertical sin fijación en móvil. Cobertura mantiene timelines y ScrollTriggers independientes, con iluminación reactiva, siete puntos provinciales y un panel accesible para explorar sus 84 cantones. Las animaciones se desactivan cuando el usuario prefiere movimiento reducido, sin perder las interacciones.
+
+El Hero utiliza una secuencia de entrada inmediata y específica por elemento: eyebrow, líneas completas del título mediante opacidad y desplazamiento, descripción y grupo de acciones. Sus dos CTA forman un único sistema visual responsive y permanecen en una fila desde 320 px; la acción telefónica conserva un enlace `tel:` real. La entrada de Cobertura aplica el radio directamente sobre la sección y utiliza un contexto padre con el mismo token claro de Servicios, por lo que las esquinas revelan naturalmente el fondo anterior sin offsets ni márgenes correctivos.
+
+## Calidad y validación
+
+Antes de entregar una sección se ejecutan las siguientes comprobaciones:
+
+```bash
+npm run check
+npm run build
+```
+
+La experiencia de scroll se valida en escritorio y móvil, incluyendo límites del pin, continuidad entre paneles, apertura del mapa interactivo y comportamiento con `prefers-reduced-motion`.
 
 ## Fuentes de contenido
 

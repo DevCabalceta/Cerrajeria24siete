@@ -1,13 +1,13 @@
-import { gsap } from 'gsap';
+import { gsap, type MotionCleanup } from './motion';
 
 const MENU_STATE_KEY = '__cerrajeriaMenuOpen';
 
-export function initNavigation() {
+export function initNavigation(): MotionCleanup {
 	const header = document.querySelector<HTMLElement>('[data-site-header]');
 	const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
 	const menu = document.querySelector<HTMLElement>('[data-mobile-menu]');
 
-	if (!header || !toggle || !menu || toggle.dataset.ready === 'true') return;
+	if (!header || !toggle || !menu || toggle.dataset.ready === 'true') return () => undefined;
 
 	toggle.dataset.ready = 'true';
 	const menuItems = gsap.utils.toArray<HTMLElement>('[data-menu-link]', menu);
@@ -16,17 +16,17 @@ export function initNavigation() {
 	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 	let isOpen = false;
 	let lastFocused: HTMLElement | null = null;
-	let scrollTicking = false;
+	let scrollFrame = 0;
+	let menuTimeline: gsap.core.Timeline | undefined;
 
 	const updateHeader = () => {
 		header.classList.toggle('is-scrolled', window.scrollY > 24);
-		scrollTicking = false;
+		scrollFrame = 0;
 	};
 
 	const onScroll = () => {
-		if (scrollTicking) return;
-		scrollTicking = true;
-		window.requestAnimationFrame(updateHeader);
+		if (scrollFrame) return;
+		scrollFrame = window.requestAnimationFrame(updateHeader);
 	};
 
 	const focusFirstLink = () => {
@@ -45,6 +45,7 @@ export function initNavigation() {
 
 	const openMenu = () => {
 		if (isOpen) return;
+		menuTimeline?.kill();
 		lastFocused = document.activeElement as HTMLElement | null;
 		setMenuState(true);
 		menu.style.visibility = 'visible';
@@ -53,12 +54,15 @@ export function initNavigation() {
 			history.pushState({ ...history.state, [MENU_STATE_KEY]: true }, '');
 		}
 
-		const timeline = gsap.timeline({
+		menuTimeline = gsap.timeline({
 			defaults: { ease: 'power3.out' },
-			onComplete: focusFirstLink,
+			onComplete: () => {
+				menuTimeline = undefined;
+				focusFirstLink();
+			},
 		});
 
-		timeline
+		menuTimeline
 			.fromTo(
 				menu,
 				{ clipPath: 'inset(0 0 100% 0)' },
@@ -74,23 +78,27 @@ export function initNavigation() {
 					stagger: reducedMotion.matches ? 0 : 0.115,
 				},
 				reducedMotion.matches ? 0 : '-=0.42',
-			)
-			.fromTo(
+			);
+		if (menuFooter) {
+			menuTimeline.fromTo(
 				menuFooter,
 				{ opacity: 0, y: 12 },
 				{ opacity: 1, y: 0, duration: reducedMotion.matches ? 0 : 0.4 },
 				reducedMotion.matches ? 0 : '-=0.25',
 			);
+		}
 	};
 
 	const closeMenu = (restoreFocus = true) => {
 		if (!isOpen) return;
+		menuTimeline?.kill();
 
-		gsap.timeline({
+		menuTimeline = gsap.timeline({
 			onComplete: () => {
+				menuTimeline = undefined;
 				setMenuState(false);
 				menu.style.visibility = 'hidden';
-				gsap.set([menu, ...menuItems, menuFooter], { clearProps: 'all' });
+				gsap.set([menu, ...menuItems, ...(menuFooter ? [menuFooter] : [])], { clearProps: 'all' });
 				if (restoreFocus) lastFocused?.focus();
 			},
 		})
@@ -137,23 +145,43 @@ export function initNavigation() {
 		}
 	};
 
-	toggle.addEventListener('click', () => (isOpen ? requestClose() : openMenu()));
-	window.addEventListener('scroll', onScroll, { passive: true });
-	window.addEventListener('popstate', () => closeMenu(false));
-	window.addEventListener('resize', () => {
+	const handleToggle = () => (isOpen ? requestClose() : openMenu());
+	const handlePopstate = () => closeMenu(false);
+	const handleResize = () => {
 		if (isOpen && window.matchMedia('(min-width: 68.01rem)').matches) {
 			history.replaceState({ ...history.state, [MENU_STATE_KEY]: undefined }, '');
 			closeMenu(false);
 		}
-	}, { passive: true });
-	document.addEventListener('keydown', onKeydown);
-
-	menu.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((link) => {
-		link.addEventListener('click', () => {
+	};
+	const anchorHandlers = [...menu.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')].map((link) => {
+		const handler = () => {
 			history.replaceState({ ...history.state, [MENU_STATE_KEY]: undefined }, '');
 			closeMenu(false);
-		});
+		};
+		link.addEventListener('click', handler);
+		return { link, handler };
 	});
 
+	toggle.addEventListener('click', handleToggle);
+	window.addEventListener('scroll', onScroll, { passive: true });
+	window.addEventListener('popstate', handlePopstate);
+	window.addEventListener('resize', handleResize, { passive: true });
+	document.addEventListener('keydown', onKeydown);
+
 	updateHeader();
+
+	return () => {
+		if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
+		menuTimeline?.kill();
+		toggle.removeEventListener('click', handleToggle);
+		window.removeEventListener('scroll', onScroll);
+		window.removeEventListener('popstate', handlePopstate);
+		window.removeEventListener('resize', handleResize);
+		document.removeEventListener('keydown', onKeydown);
+		anchorHandlers.forEach(({ link, handler }) => link.removeEventListener('click', handler));
+		setMenuState(false);
+		menu.style.visibility = 'hidden';
+		gsap.set([menu, ...menuItems, ...(menuFooter ? [menuFooter] : [])], { clearProps: 'all' });
+		delete toggle.dataset.ready;
+	};
 }

@@ -17,6 +17,7 @@
 	--color-electric-light: #8ad7ff;
 	--color-signal: #91ffb6;
 	--color-mist: #aeb8c8;
+	--color-section-light: #eef1f4;
 }
 
 :root {
@@ -80,6 +81,10 @@ a {
 	width: min(100%, var(--content-width));
 	margin-inline: auto;
 	padding-inline: var(--page-gutter);
+}
+
+.is-section-transitioning {
+	will-change: transform, opacity, filter;
 }
 
 .skip-link {

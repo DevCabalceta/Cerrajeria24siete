@@ -22,11 +22,17 @@ const socialImage = new URL(optimizedSocialImage.src, Astro.site).toString();
 	<main id="contenido">
 		<HeroSection />
 		<ServicesSection />
-		<CoverageSection />
+		<div class="coverage-transition-context">
+			<CoverageSection />
+		</div>
 	</main>
 </Layout>
 
+<style>
+	.coverage-transition-context { background: var(--color-section-light); }
+</style>
+
 <script>
-	import { initSectionTransitions } from '../scripts/section-transitions';
-	initSectionTransitions();
+	import { initPageMotion } from '../scripts/page-motion';
+	initPageMotion();
 </script>
