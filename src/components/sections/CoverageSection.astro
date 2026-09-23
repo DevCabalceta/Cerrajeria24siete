@@ -472,30 +472,30 @@ const coverageWhatsappLink = `${SITE.whatsapp.href.split('?')[0]}?text=${encodeU
 	}
 
 	.coverage-area:is(:hover, :focus-visible, .is-active)::before {
-		border-color: rgba(126, 219, 255, 0.42);
-		background: rgba(34, 166, 236, 0.14);
+		border-color: rgba(145, 255, 182, 0.5);
+		background: rgba(145, 255, 182, 0.12);
 	}
 
 	.coverage-area:focus-visible { outline: none; }
 	.area-dot {
 		position: absolute;
 		inset: 0;
-		border: 2px solid #dff7ff;
+		border: 2px solid #edfff4;
 		border-radius: 50%;
-		background: #2bb2fb;
-		box-shadow: 0 0 0.9rem rgba(43, 178, 251, 0.85);
+		background: var(--color-signal);
+		box-shadow: 0 0 0.55rem rgba(145, 255, 182, 0.95), 0 0 1.15rem rgba(145, 255, 182, 0.52);
 		transition: transform 180ms ease, background-color 180ms ease;
 	}
 
 	.coverage-area:is(:hover, :focus-visible, .is-active) .area-dot {
 		transform: scale(1.35);
-		background: #8bdeff;
+		background: #d5ffe4;
 	}
 
 	.area-pulse {
 		position: absolute;
 		inset: -0.5rem;
-		border: 1px solid rgba(107, 209, 255, 0.58);
+		border: 1px solid rgba(145, 255, 182, 0.7);
 		border-radius: 50%;
 		animation: area-pulse 2.6s var(--pulse-delay) ease-out infinite;
 	}
@@ -511,8 +511,8 @@ const coverageWhatsappLink = `${SITE.whatsapp.href.split('?')[0]}?text=${encodeU
 		transition: color 180ms ease, opacity 180ms ease;
 	}
 
-	.area-name small { margin-right: 0.4rem; color: #55c5ff; font-size: 0.48rem; font-weight: 800; }
-	.coverage-area:is(:hover, :focus-visible, .is-active) .area-name { color: #8bdeff; }
+	.area-name small { margin-right: 0.4rem; color: var(--color-signal); font-size: 0.48rem; font-weight: 800; }
+	.coverage-area:is(:hover, :focus-visible, .is-active) .area-name { color: #c5ffd9; }
 	.label-left-top .area-name { right: 1.05rem; bottom: 0.85rem; }
 	.label-right-top .area-name { bottom: 0.85rem; left: 1.05rem; }
 	.label-left-bottom .area-name { top: 1rem; right: 1.05rem; }

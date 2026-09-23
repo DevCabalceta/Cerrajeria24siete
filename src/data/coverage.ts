@@ -10,7 +10,7 @@ export const COVERAGE_PROVINCES: readonly CoverageProvince[] = [
 	{
 		id: 'san-jose',
 		name: 'San José',
-		position: { x: 53, y: 49 },
+		position: { x: 53, y: 49.5 },
 		labelClass: 'label-left-bottom',
 		cantons: [
 			'San José',
@@ -38,7 +38,7 @@ export const COVERAGE_PROVINCES: readonly CoverageProvince[] = [
 	{
 		id: 'alajuela',
 		name: 'Alajuela',
-		position: { x: 42, y: 29 },
+		position: { x: 42.5, y: 29.5 },
 		labelClass: 'label-left-top',
 		cantons: [
 			'Alajuela',
@@ -62,7 +62,7 @@ export const COVERAGE_PROVINCES: readonly CoverageProvince[] = [
 	{
 		id: 'cartago',
 		name: 'Cartago',
-		position: { x: 61, y: 50 },
+		position: { x: 61.5, y: 50.5 },
 		labelClass: 'label-right-bottom',
 		cantons: [
 			'Cartago',
@@ -78,7 +78,7 @@ export const COVERAGE_PROVINCES: readonly CoverageProvince[] = [
 	{
 		id: 'heredia',
 		name: 'Heredia',
-		position: { x: 51, y: 38 },
+		position: { x: 51, y: 38.5 },
 		labelClass: 'label-right-top',
 		cantons: [
 			'Heredia',
@@ -96,8 +96,8 @@ export const COVERAGE_PROVINCES: readonly CoverageProvince[] = [
 	{
 		id: 'guanacaste',
 		name: 'Guanacaste',
-		position: { x: 22, y: 31 },
-		labelClass: 'label-right-top',
+		position: { x: 23, y: 32 },
+		labelClass: 'label-right-bottom',
 		cantons: [
 			'Liberia',
 			'Nicoya',
@@ -115,8 +115,8 @@ export const COVERAGE_PROVINCES: readonly CoverageProvince[] = [
 	{
 		id: 'puntarenas',
 		name: 'Puntarenas',
-		position: { x: 48, y: 58 },
-		labelClass: 'label-left-bottom',
+		position: { x: 42, y: 50 },
+		labelClass: 'label-left-top',
 		cantons: [
 			'Puntarenas',
 			'Esparza',
@@ -136,7 +136,7 @@ export const COVERAGE_PROVINCES: readonly CoverageProvince[] = [
 	{
 		id: 'limon',
 		name: 'Limón',
-		position: { x: 75, y: 47 },
+		position: { x: 74.5, y: 47.5 },
 		labelClass: 'label-right-top',
 		cantons: ['Limón', 'Pococí', 'Siquirres', 'Talamanca', 'Matina', 'Guácimo'],
 	},
