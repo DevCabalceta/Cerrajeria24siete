@@ -71,6 +71,7 @@ La información repetitiva de contacto, cobertura y navegación vive en `src/dat
 Las animaciones se coordinan desde un único punto de entrada (`src/scripts/page-motion.ts`) y comparten una sola instancia configurada de GSAP y ScrollTrigger (`src/scripts/motion.ts`). Cada sección conserva su propio contexto, sus selectores y sus ScrollTriggers, de modo que Hero, Servicios y Cobertura se pueden inicializar, adaptar por breakpoint y desmontar sin interferencias.
 
 - `hero.ts`: entrada de contenido y parallax fotográfico exclusivo de escritorio.
+- `hero-slider.ts`: rotación de fondos, crossfade, progreso, pausa/reanudación y controles accesibles del Hero.
 - `services.ts`: narrativa horizontal fijada en escritorio y tarjetas verticales en móvil.
 - `coverage.ts`: entrada del mapa, parallax interno e interacción accesible por provincia.
 - `navigation.ts`: menú móvil, foco, historial y cabecera reactiva con listeners desmontables.
@@ -87,9 +88,11 @@ Los estados iniciales críticos se declaran antes del primer render mediante `da
 - Contenido empresarial basado exclusivamente en las fuentes públicas de Cerrajería24siete.
 - SEO local sin datos inventados.
 
-Las transiciones entre secciones utilizan el atributo reutilizable `data-section-panel`: la sección anterior reduce escala, opacidad y nitidez mientras entra la siguiente. Cuando una sección contiene pinning o una altura narrativa extensa, `data-section-transition-surface` limita el efecto a su contenido visual y mantiene intacto el flujo que ScrollTrigger utiliza para calcular el scroll. En móvil, el Hero dirige el escalado y desenfoque de salida exclusivamente a la capa fotográfica mediante `data-section-transition-background`, conservando nítidos el texto, los controles y las estadísticas; su entrada mantiene la secuencia escalonada mediante opacidad, sin transforms de texto durante el renderizado móvil. Servicios emplea una narrativa horizontal con pin nativo en escritorio y una composición vertical sin fijación en móvil. Cobertura mantiene timelines y ScrollTriggers independientes, con iluminación reactiva, siete puntos provinciales y un panel accesible para explorar sus 84 cantones. Las animaciones se desactivan cuando el usuario prefiere movimiento reducido, sin perder las interacciones.
+Las transiciones entre secciones utilizan el atributo reutilizable `data-section-panel`: la sección anterior reduce escala, opacidad y nitidez mientras entra la siguiente. Todas las divisiones son rectas y continúan el flujo normal del documento, sin radios, solapamientos ni contenedores auxiliares. Cuando una sección contiene pinning o una altura narrativa extensa, `data-section-transition-surface` limita el efecto a su contenido visual y mantiene intacto el flujo que ScrollTrigger utiliza para calcular el scroll. En móvil, el Hero dirige el escalado y desenfoque de salida exclusivamente a la capa fotográfica mediante `data-section-transition-background`, conservando nítidos el texto, los controles y las estadísticas; su entrada mantiene la secuencia escalonada mediante opacidad, sin transforms de texto durante el renderizado móvil. Servicios emplea una narrativa horizontal con pin nativo en escritorio y una composición vertical sin fijación en móvil. Cobertura mantiene timelines y ScrollTriggers independientes, con iluminación reactiva, siete puntos provinciales y un panel accesible para explorar sus 84 cantones. Las animaciones se desactivan cuando el usuario prefiere movimiento reducido, sin perder las interacciones.
 
-El Hero utiliza una secuencia de entrada inmediata y específica por elemento: eyebrow, líneas completas del título mediante opacidad y desplazamiento, descripción y grupo de acciones. Sus dos CTA forman un único sistema visual responsive y permanecen en una fila desde 320 px; la acción telefónica conserva un enlace `tel:` real. La entrada de Cobertura aplica el radio directamente sobre la sección y utiliza un contexto padre con el mismo token claro de Servicios, por lo que las esquinas revelan naturalmente el fondo anterior sin offsets ni márgenes correctivos. El mapa mantiene coordenadas proporcionales verificadas contra su máscara para conservar los siete markers dentro de la silueta en cualquier breakpoint; el color menta de señal conecta visualmente cada punto con su número y mejora el contraste sobre el relieve azul.
+El Hero utiliza una secuencia de entrada inmediata y específica por elemento: eyebrow, líneas completas del título mediante opacidad y desplazamiento, descripción y grupo de acciones. Sus dos CTA forman un único sistema visual responsive y permanecen en una fila desde 320 px; la acción telefónica conserva un enlace `tel:` real. La fotografía de fondo rota entre cuatro recursos declarados en `src/data/hero-slides.ts`: la imagen original del primer slide conserva prioridad de carga y los otros tres fondos son fotografías stock temporales preparadas en tiempo ocioso. Cada slide dispone de encuadre independiente para escritorio y móvil. GSAP sincroniza el crossfade, el autoplay de cuatro segundos y la píldora de progreso; el control Pausa/Reanudar congela el mismo temporizador que gobierna el cambio de fotografía y mantiene ese estado durante la selección manual. El ciclo también se pausa cuando la pestaña pierde visibilidad y se simplifica con `prefers-reduced-motion`, sin reiniciar la animación del contenido.
+
+El mapa de Cobertura mantiene coordenadas proporcionales verificadas contra su máscara para conservar los siete markers dentro de la silueta en cualquier breakpoint; el color menta de señal conecta visualmente cada punto con su número y mejora el contraste sobre el relieve azul.
 
 ## Calidad y validación
 
@@ -109,6 +112,7 @@ La experiencia de scroll se valida en escritorio y móvil, incluyendo límites d
 - Referencia competitiva: [cerrajeriameza.com](https://cerrajeriameza.com/)
 - Referencia de interacción: Alianza 360 de CEDES Don Bosco
 - Referencia visual para Cobertura: [Luminous Topography en 21st.dev](https://21st.dev/rmahammad/luminous-topography/default)
+- Fotografías stock temporales del Hero: [trabajo en taller](https://unsplash.com/photos/fQxMGkYXqFU), [herrajes de puerta](https://unsplash.com/photos/1AmEImwtnFk) y [apertura de cerradura](https://unsplash.com/photos/pTYksYcN3oI) en Unsplash.
 
 Las referencias se utilizan para investigación de contenido y UX; el diseño y el código son originales para Cerrajería24siete.
 
@@ -121,4 +125,4 @@ Las referencias se utilizan para investigación de contenido y UX; el diseño y 
 
 ## Licencia y uso
 
-Proyecto privado desarrollado para Cerrajería24siete. El contenido, marca e imágenes de la empresa pertenecen a sus respectivos titulares.
+Proyecto privado desarrollado para Cerrajería24siete. El contenido, marca e imágenes originales de la empresa pertenecen a sus respectivos titulares; las fotografías stock temporales del Hero proceden de Unsplash.

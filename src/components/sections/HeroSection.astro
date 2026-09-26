@@ -1,21 +1,36 @@
 ---
 import { Image } from 'astro:assets';
-import heroImage from '../../assets/images/hero/key-cutting-workshop.png';
+import { HERO_SLIDES } from '../../data/hero-slides';
 import { SITE } from '../../data/site';
 ---
 
 <section class="hero" id="inicio" aria-labelledby="hero-title" data-hero data-section-panel>
 	<div class="hero-media" data-hero-media data-section-transition-background>
-		<Image
-			src={heroImage}
-			alt="Profesional trabajando en la confección de una llave"
-			widths={[720, 1080, 1440, 1920]}
-			sizes="100vw"
-			format="webp"
-			quality={82}
-			loading="eager"
-			fetchpriority="high"
-		/>
+		<div class="hero-slider" data-hero-slider>
+			{HERO_SLIDES.map((slide, index) => (
+				<div
+					id={`hero-slide-${index + 1}`}
+					class:list={['hero-slide', { 'is-active': index === 0 }]}
+					data-hero-slide
+					aria-hidden={index === 0 ? 'false' : 'true'}
+					role="img"
+					aria-label={slide.alt}
+					style={`--slide-position-desktop: ${slide.desktopPosition}; --slide-position-mobile: ${slide.mobilePosition};`}
+				>
+					<Image
+						src={slide.image}
+						alt=""
+						widths={[480, 720, 1080, 1440, 1920]}
+						sizes="100vw"
+						format="webp"
+						quality={82}
+						loading={index === 0 ? 'eager' : 'lazy'}
+						fetchpriority={index === 0 ? 'high' : 'low'}
+						decoding="async"
+					/>
+				</div>
+			))}
+		</div>
 	</div>
 	<div class="hero-shade" aria-hidden="true"></div>
 	<div class="hero-grid" aria-hidden="true"></div>
@@ -64,6 +79,33 @@ import { SITE } from '../../data/site';
 		<span>Explorar</span>
 		<i aria-hidden="true"></i>
 	</a>
+
+	<nav class="hero-slider-controls" aria-label="Fondos del Hero">
+		<button
+			type="button"
+			class="hero-slider-toggle"
+			data-hero-slider-toggle
+			aria-label="Pausar presentación"
+			aria-pressed="false"
+		>
+			<svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" /></svg>
+			<svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z" /></svg>
+		</button>
+		{HERO_SLIDES.map((_, index) => (
+			<button
+				type="button"
+				class:list={['hero-slide-control', { 'is-active': index === 0 }]}
+				data-hero-slide-control={index}
+				aria-label={`Mostrar fondo ${index + 1} de ${HERO_SLIDES.length}`}
+				aria-controls={`hero-slide-${index + 1}`}
+				aria-current={index === 0 ? 'true' : undefined}
+			>
+				<span class="hero-slide-track" aria-hidden="true">
+					<span data-hero-slide-progress></span>
+				</span>
+			</button>
+		))}
+	</nav>
 </section>
 
 <style>
@@ -92,15 +134,26 @@ import { SITE } from '../../data/site';
 	.hero-media::after {
 		position: absolute;
 		inset: 0;
+		z-index: 3;
 		background: linear-gradient(180deg, rgba(7, 9, 13, 0.25), rgba(7, 9, 13, 0.06) 50%, rgba(7, 9, 13, 0.58));
 		content: '';
+		pointer-events: none;
 	}
 
-	.hero-media :global(img) {
+	.hero-slider, .hero-slide { position: absolute; inset: 0; }
+	.hero-slider { background: var(--color-ink); }
+	.hero-slide {
+		opacity: 0;
+		visibility: hidden;
+		will-change: opacity;
+	}
+
+	.hero-slide.is-active { opacity: 1; visibility: visible; }
+	.hero-slide :global(img) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		object-position: 56% center;
+		object-position: var(--slide-position-desktop);
 	}
 
 	.hero-shade {
@@ -287,6 +340,83 @@ import { SITE } from '../../data/site';
 		animation: scroll-line 2.2s ease-in-out infinite;
 	}
 
+	.hero-slider-controls {
+		position: absolute;
+		z-index: 2;
+		bottom: 1.1rem;
+		left: 50%;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		transform: translateX(-50%);
+	}
+
+	.hero-slider-toggle,
+	.hero-slide-control {
+		display: grid;
+		height: 2rem;
+		place-items: center;
+		border: 0;
+		background: transparent;
+		padding: 0;
+		color: rgba(247, 249, 252, 0.88);
+		cursor: pointer;
+	}
+
+	.hero-slider-toggle { width: 2rem; margin-right: 0.2rem; }
+	.hero-slider-toggle svg {
+		width: 0.9rem;
+		height: 0.9rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 3;
+	}
+
+	.hero-slider-toggle .icon-play { display: none; }
+	.hero-slider-toggle.is-paused .icon-pause { display: none; }
+	.hero-slider-toggle.is-paused .icon-play { display: block; }
+	.hero-slider-toggle:hover { color: #fff; }
+	.hero-slide-control { width: 1.65rem; transition: width 280ms ease; }
+	.hero-slide-control.is-active { width: 4.1rem; }
+	.hero-slide-track {
+		position: relative;
+		display: block;
+		width: 0.5rem;
+		height: 0.5rem;
+		overflow: hidden;
+		border-radius: 999px;
+		background: rgba(247, 249, 252, 0.38);
+		transition: width 280ms ease, height 280ms ease, background 220ms ease;
+	}
+
+	.hero-slide-control.is-active .hero-slide-track {
+		width: 3.65rem;
+		height: 0.42rem;
+		background: rgba(247, 249, 252, 0.3);
+	}
+
+	.hero-slide-track > span {
+		position: absolute;
+		inset: 0;
+		transform: scaleX(0);
+		transform-origin: left center;
+		border-radius: inherit;
+		background: var(--color-electric-light);
+		box-shadow: 0 0 0.65rem rgba(138, 215, 255, 0.48);
+		opacity: 0;
+		transition: opacity 180ms ease;
+	}
+
+	.hero-slide-control.is-active .hero-slide-track > span { opacity: 1; }
+	.hero-slide-control:hover .hero-slide-track { background: rgba(247, 249, 252, 0.48); }
+	.hero-slider-toggle:focus-visible,
+	.hero-slide-control:focus-visible {
+		outline: 2px solid var(--color-electric-light);
+		outline-offset: -0.2rem;
+	}
+
 	@keyframes scroll-line {
 		0% { transform: translateX(-100%); }
 		55%, 100% { transform: translateX(100%); }
@@ -303,7 +433,7 @@ import { SITE } from '../../data/site';
 		}
 
 		.hero { min-height: max(46rem, 100svh); }
-		.hero-media :global(img) { object-position: 70% center; }
+		.hero-slide :global(img) { object-position: var(--slide-position-mobile); }
 		.hero-shade {
 			background:
 				linear-gradient(0deg, rgba(7, 9, 13, 0.98) 0%, rgba(7, 9, 13, 0.91) 35%, rgba(7, 9, 13, 0.48) 72%, rgba(7, 9, 13, 0.22) 100%),
@@ -335,5 +465,16 @@ import { SITE } from '../../data/site';
 		.secondary-action { flex: 0.9 1 0; gap: 0.35rem; padding: 0.55rem 0.4rem; }
 		.secondary-action svg { width: 0.9rem; }
 		.hero-proof span { font-size: 0.58rem; }
+		.hero-slider-controls { bottom: 0.15rem; }
+		.hero-slider-toggle { width: 1.85rem; height: 2.15rem; }
+		.hero-slide-control { height: 2.15rem; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-slide { will-change: auto; }
+		.hero-slider-toggle { display: none; }
+		.hero-slide-control,
+		.hero-slide-track { transition: none; }
+		.scroll-cue i::after { animation: none; }
 	}
 </style>

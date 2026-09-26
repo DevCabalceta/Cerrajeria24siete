@@ -1,5 +1,6 @@
 import { initCoverage } from './coverage';
 import { initHero } from './hero';
+import { initHeroSlider } from './hero-slider';
 import { ScrollTrigger } from './motion';
 import { initNavigation } from './navigation';
 import { initSectionTransitions } from './section-transitions';
@@ -13,6 +14,7 @@ export function initPageMotion() {
 	const cleanups = [
 		initNavigation(),
 		initHero(),
+		initHeroSlider(),
 		initServices(),
 		initCoverage(),
 		initSectionTransitions(),
