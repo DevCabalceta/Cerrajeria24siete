@@ -1,113 +1,114 @@
 ---
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import { SERVICES, SPECIALIZED_SERVICES } from '../../data/services';
+import { SERVICE_SEQUENCE } from '../../data/service-sequence';
+import { SITE } from '../../data/site';
+
+const frames = await Promise.all(
+	SERVICES.map(async (service) => ({
+		desktop: (await getImage({ src: service.image, width: 1600, format: 'webp', quality: 78 })).src,
+		mobile: (await getImage({ src: service.mobileImage, width: 800, format: 'webp', quality: 72 })).src,
+	})),
+);
+const firstPosterDesktop = SERVICE_SEQUENCE.frameCount > 0
+	? `${SERVICE_SEQUENCE.desktopRoot}/frame-0001.webp`
+	: frames[0].desktop;
+const firstPosterMobile = SERVICE_SEQUENCE.frameCount > 0
+	? `${SERVICE_SEQUENCE.mobileRoot}/frame-0001.webp`
+	: frames[0].mobile;
 
 const serviceWhatsappLink = (service: string) =>
 	`https://wa.me/50683557575?text=${encodeURIComponent(`Hola Cerrajería24siete, necesito información sobre ${service}.`)}`;
 ---
 
-<section
-	class="services"
-	id="servicios"
-	aria-labelledby="services-title"
-	data-section-panel
-	data-services
->
+<section class="services is-static" id="servicios" aria-labelledby="services-title" data-section-panel data-services>
 	<div class="services-intro page-shell">
 		<div class="services-key-mask" aria-hidden="true">
 			<svg viewBox="0 0 1000 500">
-				<path
-					fill-rule="evenodd"
-					d="M760 52a188 188 0 1 1 0 376 188 188 0 0 1 0-376Zm0 112a76 76 0 1 0 0 152 76 76 0 0 0 0-152Z"
-				/>
+				<path fill-rule="evenodd" d="M760 52a188 188 0 1 1 0 376 188 188 0 0 1 0-376Zm0 112a76 76 0 1 0 0 152 76 76 0 0 0 0-152Z" />
 				<path d="M78 204h548v72h-82v76h-88v-76h-66v54h-86v-54H78v-72Z" />
 			</svg>
 		</div>
-
-		<div class="services-label" data-services-intro>
-			<span>02</span>
-			<p>Servicios</p>
-		</div>
-
+		<div class="services-label" data-services-intro><span>02</span><p>Servicios</p></div>
 		<div class="services-heading">
 			<h2 id="services-title" data-services-intro>
 				<span class="heading-line">Todo acceso tiene</span>
 				<span class="heading-line heading-accent">una solución.</span>
 			</h2>
 			<div class="services-intro-copy" data-services-intro>
-				<p>
-					Desde una emergencia cotidiana hasta un sistema de acceso especializado.
-					Un mismo estándar profesional para proteger lo que importa.
-				</p>
+				<p>Desde una emergencia cotidiana hasta un sistema de acceso especializado. Un mismo estándar profesional para proteger lo que importa.</p>
 				<span class="availability"><i></i> Atención a domicilio · 24/7</span>
 			</div>
 		</div>
 	</div>
 
-	<div class="services-scroll" data-services-scroll>
-		<div class="services-sticky" data-services-sticky>
-			<div class="services-track" data-services-track>
-				{SERVICES.map((service) => (
-					<article
-						class="service-card"
-						style={`--card-accent: ${service.accent}`}
-						data-service-card
-					>
-						<div class="service-media">
-							<Image
-								src={service.image}
-								alt={service.imageAlt}
-								widths={[500, 800, 1200]}
-								sizes="(max-width: 900px) 100vw, 42vw"
-								format="webp"
-								quality={80}
-								loading="lazy"
-							/>
-							<div class="media-shade" aria-hidden="true"></div>
-							<span class="service-number">{service.number}</span>
-							<span class="service-category">{service.category}</span>
-						</div>
-
-						<div class="service-body">
-							<div>
-								<p class="service-overline">Área de servicio</p>
+	<div class="services-experience" data-services-experience>
+		<div class="services-scene" data-services-scene>
+			<picture class="services-poster" aria-hidden="true">
+				<source media="(max-width: 768px)" srcset={firstPosterMobile} />
+				<img src={firstPosterDesktop} alt="" loading="lazy" decoding="async" data-services-poster />
+			</picture>
+			<canvas class="services-canvas" aria-hidden="true" data-services-canvas data-sequence-frame-count={SERVICE_SEQUENCE.frameCount} data-sequence-desktop-root={SERVICE_SEQUENCE.desktopRoot} data-sequence-mobile-root={SERVICE_SEQUENCE.mobileRoot}></canvas>
+			<div class="services-scene-shade" aria-hidden="true"></div>
+			<div class="services-scene-grid" aria-hidden="true"></div>
+			<div class="services-scene-inner page-shell">
+				<div class="services-scene-top">
+					<span><i></i> Áreas de servicio</span>
+					<span>Experiencia 02 / 03</span>
+				</div>
+				<div class="services-chapters" aria-label="Servicios de cerrajería">
+					{SERVICES.map((service, index) => (
+						<article class="service-chapter" data-service-chapter data-frame-desktop={frames[index].desktop} data-frame-mobile={frames[index].mobile}>
+							<picture class="service-chapter-image" aria-hidden="true">
+								<source media="(max-width: 768px)" srcset={frames[index].mobile} />
+								<img src={frames[index].desktop} alt="" loading="lazy" decoding="async" />
+							</picture>
+							<div class="service-chapter-copy">
+								<p class="service-eyebrow"><span>{service.number} / {String(SERVICES.length).padStart(2, '0')}</span> {service.category}</p>
 								<h3>{service.title}</h3>
 								<p class="service-description">{service.description}</p>
+								<ul aria-label={`Incluye ${service.title}`}>{service.features.map((feature) => <li>{feature}</li>)}</ul>
+								<a href={serviceWhatsappLink(service.title)} target="_blank" rel="noopener noreferrer">Consultar servicio <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg></a>
 							</div>
-
-							<div class="service-bottom">
-								<ul aria-label={`Incluye ${service.title}`}>
-									{service.features.map((feature) => <li>{feature}</li>)}
-								</ul>
-								<a href={serviceWhatsappLink(service.title)} target="_blank" rel="noreferrer">
-									Consultar
-									<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" /></svg>
-								</a>
-							</div>
-						</div>
-					</article>
-				))}
-			</div>
-
-			<div class="services-progress page-shell" aria-hidden="true">
-				<span class="progress-label">Desliza para explorar</span>
-				<div class="progress-line"><i data-services-progress></i></div>
-				<span><b data-services-current>01</b> / {String(SERVICES.length).padStart(2, '0')}</span>
+						</article>
+					))}
+				</div>
+				<div class="services-scene-bottom" aria-hidden="true">
+					<span>Desliza para descubrir</span>
+					<div class="services-progress"><i data-services-progress></i></div>
+					<span><b data-services-current>01</b> / {String(SERVICES.length).padStart(2, '0')}</span>
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="specialized page-shell" data-section-transition-surface>
+	<div class="specialized page-shell" data-section-transition-surface data-specialized-accordion>
 		<div class="specialized-heading">
-			<p>Servicios especializados</p>
-			<h3>También resolvemos<br />los detalles.</h3>
+			<div class="specialized-key-mask" aria-hidden="true">
+				<svg viewBox="0 0 1000 500">
+					<path fill-rule="evenodd" d="M760 52a188 188 0 1 1 0 376 188 188 0 0 1 0-376Zm0 112a76 76 0 1 0 0 152 76 76 0 0 0 0-152Z" />
+					<path d="M78 204h548v72h-82v76h-88v-76h-66v54h-86v-54H78v-72Z" />
+				</svg>
+			</div>
+			<p class="specialized-eyebrow"><span>02 /</span> Servicios especializados</p>
+			<h3><span>También</span><span>resolvemos</span><span>los detalles.</span></h3>
+			<p class="specialized-lead">Respuestas claras sobre llaves, cerraduras y sistemas de acceso. Si tu caso es distinto, conversemos.</p>
+			<a class="specialized-contact" href={SITE.whatsapp.href} target="_blank" rel="noopener noreferrer">
+				Consultar por WhatsApp
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M8 5h11v11" /></svg>
+			</a>
 		</div>
-		<ol>
+		<ol aria-label="Preguntas sobre servicios especializados">
 			{SPECIALIZED_SERVICES.map((service, index) => (
 				<li data-specialized-item>
-					<span>{String(index + 1).padStart(2, '0')}</span>
-					<p>{service}</p>
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 17 10-10M8 7h9v9" /></svg>
+					<details data-specialized-details open={index === 0} class:list={{ 'is-open': index === 0 }}>
+						<summary>
+							<span class="specialized-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+							<span class="specialized-question">{service.question}</span>
+							<span class="specialized-toggle" aria-hidden="true"></span>
+						</summary>
+						<div class="specialized-answer"><div class="specialized-answer-inner"><p>{service.answer}</p></div></div>
+					</details>
 				</li>
 			))}
 		</ol>
@@ -115,405 +116,154 @@ const serviceWhatsappLink = (service: string) =>
 </section>
 
 <style>
-	:global(html[data-motion='pending']) [data-services-intro] {
-		opacity: 0;
-		transform: translate3d(0, 45px, 0);
-	}
-
-	:global(html[data-motion='pending']) [data-specialized-item] {
-		opacity: 0;
-		transform: translate3d(0, 24px, 0);
-	}
-
-	.services {
-		position: relative;
-		overflow: clip;
-		background: var(--color-section-light);
-		color: #0a0d12;
-	}
-
-	.services-intro {
-		position: relative;
-		display: grid;
-		min-height: min(48rem, 78svh);
-		grid-template-columns: minmax(8rem, 0.2fr) 1fr;
-		align-content: center;
-		gap: 2rem;
-		padding-top: clamp(6rem, 10vh, 9rem);
-		padding-bottom: clamp(5rem, 9vh, 8rem);
-	}
-
-	.services-intro > :not(.services-key-mask) {
-		position: relative;
-		z-index: 1;
-	}
-
-	.services-key-mask {
-		position: absolute;
-		top: 8%;
-		right: -4%;
-		width: min(74vw, 68rem);
-		color: #168bd2;
-		opacity: 0.065;
-		transform: rotate(-9deg);
-		transform-origin: center;
-		mask-image: linear-gradient(90deg, transparent 2%, black 34%, black 88%, transparent);
-		pointer-events: none;
-	}
-
-	.services-key-mask svg {
-		display: block;
-		width: 100%;
-		fill: currentColor;
-	}
-
-	.services-label {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.8rem;
-		padding-top: 0.9rem;
-		font-size: 0.7rem;
-		font-weight: 750;
-		letter-spacing: 0.13em;
-		text-transform: uppercase;
-	}
-
-	.services-label span {
-		display: grid;
-		width: 2.1rem;
-		aspect-ratio: 1;
-		place-items: center;
-		border: 1px solid rgba(10, 13, 18, 0.25);
-		border-radius: 50%;
-		color: #177dbd;
-		font-size: 0.62rem;
-	}
-
-	.services-label p { margin: 0.55rem 0 0; }
-	.services-heading {
-		display: grid;
-		grid-template-columns: minmax(38rem, 1fr) minmax(15rem, 18rem);
-		align-items: end;
-		gap: clamp(2rem, 3.5vw, 4rem);
-	}
-
-	.services-heading h2 {
-		margin: 0;
-		font-size: clamp(4.5rem, 6vw, 6.2rem);
-		font-weight: 520;
-		letter-spacing: -0.075em;
-		line-height: 0.92;
-	}
-
-	.heading-line {
-		display: block;
-		white-space: nowrap;
-	}
-
+	:global(html[data-motion='pending']) [data-services-intro] { opacity: 0; transform: translate3d(0, 45px, 0); }
+	:global(html[data-motion='pending']) [data-specialized-item] { opacity: 0; transform: translate3d(0, 24px, 0); }
+	.services { position: relative; background: var(--color-section-light); color: #0a0d12; }
+	.services-intro { position: relative; display: grid; min-height: min(48rem, 78svh); grid-template-columns: minmax(8rem, .2fr) 1fr; align-content: center; gap: 2rem; padding-top: clamp(6rem, 10vh, 9rem); padding-bottom: clamp(5rem, 9vh, 8rem); overflow: clip; }
+	.services-intro > :not(.services-key-mask) { position: relative; z-index: 1; }
+	.services-key-mask { position: absolute; top: 8%; right: -4%; width: min(74vw, 68rem); color: #168bd2; opacity: .065; transform: rotate(-9deg); transform-origin: center; mask-image: linear-gradient(90deg, transparent 2%, black 34%, black 88%, transparent); pointer-events: none; }
+	.services-key-mask svg { display: block; width: 100%; fill: currentColor; }
+	.services-label { display: flex; align-items: flex-start; gap: .8rem; padding-top: .9rem; font-size: .7rem; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+	.services-label span { display: grid; width: 2.1rem; aspect-ratio: 1; place-items: center; border: 1px solid rgba(10,13,18,.25); border-radius: 50%; color: #177dbd; font-size: .62rem; }
+	.services-label p { margin: .55rem 0 0; }
+	.services-heading { display: grid; grid-template-columns: minmax(38rem, 1fr) minmax(15rem, 18rem); align-items: end; gap: clamp(2rem, 3.5vw, 4rem); }
+	.services-heading h2 { margin: 0; font-size: clamp(4.5rem, 6vw, 6.2rem); font-weight: 520; letter-spacing: -.075em; line-height: .92; }
+	.heading-line { display: block; white-space: nowrap; }
 	.heading-accent { color: #168bd2; }
-	.services-intro-copy {
-		display: grid;
-		gap: 2rem;
-		padding-bottom: 0.55rem;
-	}
+	.services-intro-copy { display: grid; gap: 2rem; padding-bottom: .55rem; }
+	.services-intro-copy > p { margin: 0; color: rgba(10,13,18,.62); font-size: clamp(.94rem, 1.25vw, 1.1rem); line-height: 1.75; }
+	.availability { display: inline-flex; align-items: center; gap: .65rem; font-size: .67rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+	.availability i, .services-scene-top i { width: .42rem; aspect-ratio: 1; border-radius: 50%; background: #10c477; box-shadow: 0 0 .8rem rgba(16,196,119,.5); }
 
-	.services-intro-copy > p {
-		margin: 0;
-		color: rgba(10, 13, 18, 0.62);
-		font-size: clamp(0.94rem, 1.25vw, 1.1rem);
-		line-height: 1.75;
-	}
+	.services-experience { position: relative; height: calc(100svh + 300svh); background: #090f18; }
+	.services-scene { position: sticky; top: 0; height: 100svh; min-height: 34rem; overflow: hidden; background: #090f18; color: #f7f9fc; isolation: isolate; }
+	.services-poster, .services-canvas, .services-scene-shade, .services-scene-grid { position: absolute; inset: 0; width: 100%; height: 100%; }
+	.services-poster img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+	.services-canvas { opacity: 0; transition: opacity .45s ease; }
+	.services.is-interactive .services-canvas.is-ready { opacity: 1; }
+	.services-scene-shade { background: linear-gradient(90deg, rgba(5,10,17,.91) 0%, rgba(5,10,17,.68) 37%, rgba(5,10,17,.18) 75%), linear-gradient(0deg, rgba(5,10,17,.82), transparent 55%); pointer-events: none; }
+	.services-scene-grid { background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: min(14vw, 10rem) min(14vw, 10rem); opacity: .55; pointer-events: none; }
+	.services-scene-inner { position: relative; z-index: 1; display: flex; height: 100%; flex-direction: column; justify-content: space-between; padding-top: clamp(2rem, 5vh, 4rem); padding-bottom: clamp(2rem, 5vh, 4rem); }
+	.services-scene-top, .services-scene-bottom { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .66rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+	.services-scene-top { color: rgba(247,249,252,.7); }
+	.services-scene-top > span:first-child { display: flex; align-items: center; gap: .6rem; }
+	.services-scene-bottom { display: grid; grid-template-columns: auto minmax(5rem, 1fr) auto; color: rgba(247,249,252,.56); }
+	.services-scene-bottom b { color: #83d6ff; font-weight: 800; }
+	.services-progress { height: 1px; background: rgba(255,255,255,.27); overflow: hidden; }
+	.services-progress i { display: block; width: 100%; height: 100%; background: #83d6ff; transform: scaleX(0); transform-origin: left; }
+	.services-chapters { position: relative; width: 100%; height: min(31rem, 65svh); }
+	.service-chapter { position: absolute; inset: 0; display: flex; align-items: end; }
+	.service-chapter-image { display: none; }
+	.service-chapter-copy { max-width: min(37rem, 58vw); }
+	.service-eyebrow { display: flex; align-items: center; gap: 1rem; margin: 0 0 1.25rem; color: #b4e6ff; font-size: .7rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+	.service-eyebrow span { color: #83d6ff; }
+	.service-chapter h3 { max-width: 13ch; margin: 0; font-size: clamp(3.4rem, 6vw, 6.6rem); font-weight: 520; letter-spacing: -.07em; line-height: .94; text-wrap: balance; }
+	.service-description { max-width: 34rem; margin: 1.5rem 0 0; color: rgba(247,249,252,.8); font-size: clamp(.95rem, 1.2vw, 1.13rem); line-height: 1.7; }
+	.service-chapter ul { display: flex; flex-wrap: wrap; gap: .55rem .8rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
+	.service-chapter li { display: inline-flex; align-items: center; gap: .45rem; color: rgba(247,249,252,.76); font-size: .7rem; }
+	.service-chapter li::before { width: .25rem; aspect-ratio: 1; border-radius: 50%; background: #83d6ff; content: ''; }
+	.service-chapter a { display: inline-flex; align-items: center; gap: .6rem; margin-top: 1.7rem; border-bottom: 1px solid rgba(255,255,255,.5); padding-bottom: .4rem; color: #fff; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; transition: color .2s, border-color .2s; }
+	.service-chapter a:hover { color: #83d6ff; border-color: #83d6ff; }
+	.service-chapter svg { width: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+	.services.is-interactive .service-chapter { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(20px); transition: opacity .35s ease, transform .35s ease, visibility .35s; }
+	.services.is-interactive .service-chapter.is-active { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
+	.services.is-interactive .service-chapter.is-leaving { transform: translateY(-10px); }
 
-	.availability {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.65rem;
-		font-size: 0.67rem;
-		font-weight: 750;
-		letter-spacing: 0.09em;
-		text-transform: uppercase;
-	}
+	.specialized { position: relative; display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: clamp(3rem, 7vw, 8rem); padding-top: clamp(6rem, 10vw, 9rem); padding-bottom: clamp(7rem, 12vw, 12rem); }
+	.specialized::after { position: absolute; top: 18%; right: 0; width: min(60%, 48rem); aspect-ratio: 1; border: 1px solid rgba(22,139,210,.12); border-radius: 50%; content: ''; pointer-events: none; }
+	.specialized-heading { position: sticky; top: clamp(6rem, 11vh, 9rem); align-self: start; isolation: isolate; }
+	.specialized-heading > :not(.specialized-key-mask) { position: relative; z-index: 1; }
+	.specialized-key-mask { position: absolute; top: 1.5rem; left: -7%; width: min(107%, 34rem); color: #168bd2; opacity: .065; transform: rotate(-10deg); transform-origin: center; pointer-events: none; }
+	.specialized-key-mask svg { display: block; width: 100%; fill: currentColor; }
+	.specialized-eyebrow { display: flex; gap: .8rem; margin: 0 0 clamp(3rem, 5vw, 5rem); color: #51606b; font-size: .66rem; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; }
+	.specialized-eyebrow span { color: #168bd2; }
+	.specialized-heading h3 { margin: 0; font-size: clamp(3.2rem, 5vw, 6.5rem); font-weight: 850; letter-spacing: -.09em; line-height: .89; text-transform: uppercase; }
+	.specialized-heading h3 span { display: block; }
+	.specialized-heading h3 span:last-child { color: #168bd2; }
+	.specialized-lead { max-width: 28rem; margin: clamp(2rem, 3.5vw, 3rem) 0 0; color: rgba(10,13,18,.65); font-size: clamp(.95rem, 1.1vw, 1.05rem); line-height: 1.7; }
+	.specialized-contact { display: inline-flex; align-items: center; justify-content: space-between; gap: 2.5rem; margin-top: clamp(2rem, 3vw, 3rem); border-bottom: 1px solid #168bd2; padding: 0 0 .7rem; color: #0a0d12; font-size: .78rem; font-weight: 700; text-decoration: none; transition: color .25s ease, gap .25s ease; }
+	.specialized-contact:hover { gap: 2.9rem; color: #168bd2; }
+	.specialized-contact:focus-visible { outline: 2px solid #168bd2; outline-offset: 4px; }
+	.specialized-contact svg { width: 1rem; fill: none; stroke: #168bd2; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+	.specialized ol { position: relative; z-index: 1; margin: 0; padding: 0; list-style: none; }
+	.specialized li { border-top: 1px solid rgba(10,13,18,.16); }
+	.specialized li:last-child { border-bottom: 1px solid rgba(10,13,18,.16); }
+	.specialized details { position: relative; transition: background-color .26s ease; }
+	.specialized details::before { position: absolute; inset: auto 0 0; height: 1px; background: #168bd2; content: ''; transform: scaleX(0); transform-origin: left; transition: transform .26s ease; pointer-events: none; }
+	.specialized details:hover { background: rgba(255,255,255,.28); }
+	.specialized details:hover::before, .specialized details.is-open::before { transform: scaleX(1); }
+	.specialized details.is-open { background: rgba(255,255,255,.34); }
+	.specialized summary { display: grid; grid-template-columns: 3.1rem minmax(0, 1fr) 2.8rem; align-items: start; gap: clamp(.75rem, 2vw, 1.5rem); min-height: clamp(6.2rem, 8vw, 8.6rem); padding: clamp(1.4rem, 2vw, 2rem) .25rem; cursor: pointer; list-style: none; }
+	.specialized summary::-webkit-details-marker { display: none; }
+	.specialized summary:focus-visible { outline: 2px solid #168bd2; outline-offset: -2px; }
+	.specialized-number { padding-top: .4rem; color: #168bd2; font-size: .62rem; font-weight: 800; letter-spacing: .08em; transition: color .26s ease; }
+	.specialized-question { font-size: clamp(1.18rem, 1.9vw, 2rem); font-weight: 520; letter-spacing: -.06em; line-height: 1.2; transition: color .26s ease, transform .26s ease; }
+	.specialized details:hover .specialized-number, .specialized details.is-open .specialized-number { color: #006cae; }
+	.specialized details:hover .specialized-question { color: #105e8e; transform: translateX(.25rem); }
+	.specialized details.is-open .specialized-question { color: #0a557f; }
+	.specialized-toggle { position: relative; display: grid; width: 2.45rem; aspect-ratio: 1; place-items: center; border: 1px solid rgba(10,13,18,.35); border-radius: 50%; color: #0a0d12; transition: background-color .26s ease, border-color .26s ease, color .26s ease, transform .26s ease; }
+	.specialized-toggle::before, .specialized-toggle::after { position: absolute; width: .75rem; height: 1.5px; border-radius: 1px; background: currentColor; content: ''; transition: transform .26s ease; }
+	.specialized-toggle::after { transform: rotate(90deg); }
+	.specialized details.is-open .specialized-toggle { border-color: #168bd2; background: #168bd2; color: #fff; }
+	.specialized details.is-open .specialized-toggle::before { transform: rotate(45deg); }
+	.specialized details.is-open .specialized-toggle::after { transform: rotate(135deg); }
+	.specialized summary:hover .specialized-toggle { border-color: #168bd2; transform: scale(1.07); }
+	.specialized-answer { overflow: hidden; }
+	.specialized-answer-inner { padding: 0 4.7rem 1.8rem 4.85rem; }
+	.specialized-answer p { max-width: 48ch; margin: 0; color: rgba(10,13,18,.67); font-size: clamp(.9rem, 1.1vw, 1rem); line-height: 1.7; }
+	@media (prefers-reduced-motion: reduce) { .specialized details, .specialized details::before, .specialized-number, .specialized-question, .specialized-toggle, .specialized-toggle::before, .specialized-toggle::after, .specialized-contact { transition: none; } .specialized details:hover .specialized-question, .specialized summary:hover .specialized-toggle { transform: none; } }
 
-	.availability i {
-		width: 0.42rem;
-		aspect-ratio: 1;
-		border-radius: 50%;
-		background: #10a963;
-		box-shadow: 0 0 0.8rem rgba(16, 169, 99, 0.5);
-	}
+	.services.is-static .services-experience { height: auto; padding: clamp(2rem, 5vw, 5rem) var(--page-gutter); background: #dfe4e9; }
+	.services.is-static .services-scene { position: relative; height: auto; min-height: 0; overflow: visible; background: transparent; color: #0a0d12; }
+	.services.is-static .services-poster, .services.is-static .services-canvas, .services.is-static .services-scene-shade, .services.is-static .services-scene-grid, .services.is-static .services-scene-top, .services.is-static .services-scene-bottom { display: none; }
+	.services.is-static .services-scene-inner { display: block; height: auto; padding: 0; }
+	.services.is-static .services-chapters { display: grid; height: auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+	.services.is-static .service-chapter { position: static; display: block; overflow: hidden; border-radius: 1.2rem; background: #0b0f15; color: #f7f9fc; }
+	.services.is-static .service-chapter-image { display: block; height: 18rem; }
+	.services.is-static .service-chapter-image img { width: 100%; height: 100%; object-fit: cover; }
+	.services.is-static .service-chapter-copy { max-width: none; padding: clamp(1.5rem, 3vw, 2.5rem); }
+	.services.is-static .service-chapter h3 { font-size: clamp(2.2rem, 3vw, 3.5rem); }
 
-	.services-scroll { position: relative; }
-	.services-sticky {
-		position: relative;
-		display: flex;
-		height: 100svh;
-		min-height: 44rem;
-		align-items: center;
-		overflow: hidden;
-		background: #dfe4e9;
-	}
-
-	.services-track {
-		display: flex;
-		width: max-content;
-		gap: clamp(1rem, 2vw, 1.75rem);
-		padding-inline: var(--page-gutter);
-	}
-
-	.service-card {
-		display: grid;
-		width: min(80vw, 74rem);
-		height: min(69svh, 44rem);
-		min-height: 34rem;
-		flex: 0 0 auto;
-		grid-template-columns: 51% 49%;
-		overflow: hidden;
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		border-radius: clamp(1.4rem, 2.4vw, 2.5rem);
-		background: #0b0f15;
-		box-shadow: 0 2rem 5rem rgba(26, 34, 44, 0.14);
-		color: #f7f9fc;
-	}
-
-	.service-media {
-		position: relative;
-		min-width: 0;
-		overflow: hidden;
-		background: #161c24;
-	}
-
-	.service-media :global(img) {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		transition: transform 900ms cubic-bezier(0.2, 0.75, 0.2, 1), filter 500ms ease;
-	}
-
-	.service-card:hover .service-media :global(img) { transform: scale(1.04); }
-	.media-shade {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(180deg, rgba(7, 9, 13, 0.08), rgba(7, 9, 13, 0.5));
-	}
-
-	.service-media::after {
-		position: absolute;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		height: 3px;
-		background: var(--card-accent);
-		content: '';
-	}
-
-	.service-number,
-	.service-category {
-		position: absolute;
-		top: 1.6rem;
-		font-size: 0.66rem;
-		font-weight: 800;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-	}
-
-	.service-number { left: 1.6rem; color: var(--card-accent); }
-	.service-category {
-		right: 1.6rem;
-		border: 1px solid rgba(255, 255, 255, 0.28);
-		border-radius: 999px;
-		background: rgba(7, 9, 13, 0.25);
-		padding: 0.55rem 0.75rem;
-		backdrop-filter: blur(10px);
-	}
-
-	.service-body {
-		display: flex;
-		min-width: 0;
-		flex-direction: column;
-		justify-content: space-between;
-		gap: 2rem;
-		padding: clamp(2rem, 4vw, 4.5rem);
-	}
-
-	.service-overline {
-		margin: 0 0 clamp(1.5rem, 3vh, 2.5rem);
-		color: var(--card-accent);
-		font-size: 0.66rem;
-		font-weight: 800;
-		letter-spacing: 0.13em;
-		text-transform: uppercase;
-	}
-
-	.service-body h3 {
-		max-width: 8ch;
-		margin: 0;
-		font-size: clamp(2.8rem, 4.7vw, 5.6rem);
-		font-weight: 520;
-		letter-spacing: -0.065em;
-		line-height: 0.94;
-	}
-
-	.service-description {
-		max-width: 33rem;
-		margin: clamp(1.4rem, 3vh, 2.2rem) 0 0;
-		color: rgba(247, 249, 252, 0.62);
-		font-size: clamp(0.88rem, 1.1vw, 1.02rem);
-		line-height: 1.65;
-	}
-
-	.service-bottom {
-		display: grid;
-		grid-template-columns: 1fr auto;
-		align-items: end;
-		gap: 2rem;
-	}
-
-	.service-bottom ul { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
-	.service-bottom li {
-		display: flex;
-		align-items: center;
-		gap: 0.55rem;
-		color: rgba(247, 249, 252, 0.52);
-		font-size: 0.7rem;
-	}
-
-	.service-bottom li::before { width: 0.28rem; aspect-ratio: 1; border-radius: 50%; background: var(--card-accent); content: ''; }
-	.service-bottom a {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.7rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.35);
-		padding-bottom: 0.45rem;
-		font-size: 0.7rem;
-		font-weight: 800;
-		letter-spacing: 0.08em;
-		text-decoration: none;
-		text-transform: uppercase;
-		transition: border-color 180ms ease, color 180ms ease;
-	}
-
-	.service-bottom a:hover { border-color: var(--card-accent); color: var(--card-accent); }
-	.service-bottom svg { width: 1.05rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
-
-	.services-progress {
-		position: absolute;
-		right: 0;
-		bottom: 1.8rem;
-		left: 0;
-		display: grid;
-		grid-template-columns: auto minmax(8rem, 1fr) auto;
-		align-items: center;
-		gap: 1rem;
-		color: rgba(10, 13, 18, 0.5);
-		font-size: 0.62rem;
-		font-weight: 800;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-	}
-
-	.progress-line { height: 1px; overflow: hidden; background: rgba(10, 13, 18, 0.16); }
-	.progress-line i { display: block; width: 100%; height: 100%; transform: scaleX(0); transform-origin: left; background: #168bd2; }
-	.services-progress b { color: #0a0d12; font-weight: 800; }
-
-	.specialized {
-		display: grid;
-		grid-template-columns: minmax(18rem, 0.75fr) 1fr;
-		gap: clamp(3rem, 8vw, 9rem);
-		padding-top: clamp(7rem, 12vw, 12rem);
-		padding-bottom: clamp(7rem, 12vw, 12rem);
-	}
-
-	.specialized-heading > p {
-		margin: 0 0 1.3rem;
-		color: #168bd2;
-		font-size: 0.68rem;
-		font-weight: 800;
-		letter-spacing: 0.13em;
-		text-transform: uppercase;
-	}
-
-	.specialized-heading h3 {
-		margin: 0;
-		font-size: clamp(2.7rem, 4.5vw, 5rem);
-		font-weight: 520;
-		letter-spacing: -0.065em;
-		line-height: 0.96;
-	}
-
-	.specialized ol { margin: 0; padding: 0; list-style: none; }
-	.specialized li {
-		display: grid;
-		grid-template-columns: 2.25rem 1fr auto;
-		align-items: center;
-		gap: 0.75rem;
-		border-top: 1px solid rgba(10, 13, 18, 0.16);
-		padding-block: 1.25rem;
-	}
-
-	.specialized li:last-child { border-bottom: 1px solid rgba(10, 13, 18, 0.16); }
-	.specialized li span { color: #168bd2; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; }
-	.specialized li p { margin: 0; font-size: clamp(1rem, 1.45vw, 1.3rem); font-weight: 600; letter-spacing: -0.025em; }
-	.specialized li svg { width: 1.1rem; fill: none; stroke: rgba(10, 13, 18, 0.42); stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.4; }
-
-	.services.is-static .services-sticky { height: auto; min-height: 0; padding-block: 4rem; }
-	.services.is-static .services-track { display: grid; width: 100%; }
-	.services.is-static .service-card { width: 100%; }
-	.services.is-static .services-progress { display: none; }
-
-	@media (max-width: 75rem) {
-		.services-heading { grid-template-columns: 1fr; align-items: start; }
-		.services-intro-copy { max-width: 34rem; }
-		.service-card { width: 86vw; }
-	}
-
+	@media (max-width: 75rem) { .services-heading { grid-template-columns: 1fr; align-items: start; } .services-intro-copy { max-width: 34rem; } }
 	@media (max-width: 56.25rem) {
-		:global(html[data-motion='pending']) [data-service-card] {
-			opacity: 0;
-			transform: translate3d(0, 55px, 0);
-		}
-
-		.services-intro {
-			min-height: auto;
-			grid-template-columns: 1fr;
-			gap: 2.5rem;
-			padding-top: 7rem;
-			padding-bottom: 5rem;
-		}
-
+		.services-intro { min-height: auto; grid-template-columns: 1fr; gap: 2.5rem; padding-top: 7rem; padding-bottom: 5rem; }
 		.services-label { padding-top: 0; }
-		.services-key-mask {
-			top: 12%;
-			right: -28%;
-			width: 138%;
-			opacity: 0.055;
-		}
-
+		.services-key-mask { top: 12%; right: -28%; width: 138%; opacity: .055; }
 		.heading-line { white-space: normal; }
 		.services-heading h2 { font-size: clamp(3.25rem, 11vw, 6.5rem); }
-		.services-scroll { padding-inline: var(--page-gutter); background: #dfe4e9; }
-		.services-sticky { display: block; height: auto; min-height: 0; overflow: visible; padding-block: 1.25rem 5rem; background: transparent; }
-		.services-track { display: grid; width: 100%; gap: 1rem; padding-inline: 0; }
-		.service-card {
-			width: 100%;
-			height: auto;
-			min-height: 0;
-			grid-template-columns: 1fr;
-		}
-
-		.service-media { aspect-ratio: 4 / 3; }
-		.service-body { min-height: 31rem; padding: clamp(1.5rem, 7vw, 2.5rem); }
-		.service-body h3 { max-width: 10ch; font-size: clamp(2.7rem, 10vw, 4.6rem); }
-		.service-bottom { grid-template-columns: 1fr; align-items: start; }
-		.service-bottom a { justify-self: start; }
-		.services-progress { display: none; }
-		.specialized { grid-template-columns: 1fr; }
+		.specialized { grid-template-columns: 1fr; gap: clamp(3rem, 6vw, 5rem); }
+		.specialized-heading { position: relative; top: auto; }
+		.specialized-heading h3 { font-size: clamp(3.4rem, 8vw, 6rem); }
+		.specialized-eyebrow { margin-bottom: 2.5rem; }
+		.specialized::after { top: 35%; width: min(85%, 38rem); }
 	}
-
+	@media (max-width: 48rem) {
+		.services-experience { height: calc(100svh + 260svh); }
+		.services-scene { min-height: 0; }
+		.services-scene-inner { padding-top: 2rem; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+		.services-scene-shade { background: linear-gradient(0deg, rgba(5,10,17,.95) 0%, rgba(5,10,17,.75) 42%, rgba(5,10,17,.12) 100%); }
+		.services-chapters { height: auto; min-height: 22rem; }
+		.service-chapter-copy { max-width: min(100%, 30rem); }
+		.service-chapter h3 { max-width: 12ch; font-size: clamp(2.9rem, 11vw, 4.5rem); }
+		.service-description { margin-top: 1rem; font-size: .95rem; line-height: 1.55; }
+		.service-chapter ul { margin-top: 1rem; }
+		.service-chapter a { margin-top: 1.15rem; }
+		.services-scene-bottom { font-size: .55rem; }
+		.services.is-static .services-chapters { grid-template-columns: 1fr; }
+	}
 	@media (max-width: 34rem) {
 		.services-heading h2 { font-size: clamp(2.9rem, 13vw, 4.4rem); }
 		.services-intro-copy { gap: 1.5rem; }
-		.service-body { min-height: 29rem; }
-		.service-body h3 { font-size: clamp(2.55rem, 12vw, 3.8rem); }
-		.specialized { gap: 3rem; }
+		.services-scene-top > span:last-child { display: none; }
+		.service-chapter h3 { font-size: clamp(2.55rem, 11vw, 3.5rem); }
+		.service-chapter li { font-size: .65rem; }
+		.services-scene-bottom > span:first-child { font-size: .48rem; }
+		.specialized { gap: 2.5rem; }
+		.specialized-heading h3 { font-size: clamp(2.65rem, 10vw, 3.5rem); }
+		.specialized-key-mask { top: 1.1rem; width: 88%; }
+		.specialized-lead { margin-top: 2rem; }
+		.specialized summary { grid-template-columns: 1.75rem minmax(0, 1fr) 2.45rem; gap: .5rem; min-height: 5rem; padding: 1.25rem .35rem; }
+		.specialized-question { font-size: clamp(1.05rem, 4.7vw, 1.4rem); }
+		.specialized-answer-inner { padding-left: 2.6rem; padding-right: 2.8rem; }
 	}
 </style>

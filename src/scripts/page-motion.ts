@@ -5,6 +5,7 @@ import { ScrollTrigger } from './motion';
 import { initNavigation } from './navigation';
 import { initSectionTransitions } from './section-transitions';
 import { initServices } from './services';
+import { initSpecializedAccordion } from './specialized-accordion';
 
 export function initPageMotion() {
 	const root = document.documentElement;
@@ -16,6 +17,7 @@ export function initPageMotion() {
 		initHero(),
 		initHeroSlider(),
 		initServices(),
+		initSpecializedAccordion(),
 		initCoverage(),
 		initSectionTransitions(),
 	].filter((cleanup): cleanup is () => void => typeof cleanup === 'function');
