@@ -1,11 +1,44 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import FloatingActions from '../components/layout/FloatingActions.astro';
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import { business } from '../data/business';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../sections/Hero.astro';
+import Introduction from '../sections/Introduction.astro';
+import Automotive from '../sections/Automotive.astro';
+import Coverage from '../sections/Coverage.astro';
+import Emergency from '../sections/Emergency.astro';
+import Faq from '../sections/Faq.astro';
+import FinalCta from '../sections/FinalCta.astro';
+import Gallery from '../sections/Gallery.astro';
+import Gates from '../sections/Gates.astro';
+import Residential from '../sections/Residential.astro';
+import Services from '../sections/Services.astro';
+import WhyUs from '../sections/WhyUs.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = `${business.name} — Cerrajeros 24/7 en Costa Rica`;
+const description = `Cerrajería en general y portones eléctricos a domicilio, ${business.availability.long}. ${business.coverage.areas.join(', ')}, ${business.coverage.summary.toLowerCase()}. Llame al ${business.phone.display}.`;
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout title={title} description={description}>
+  <Header />
+
+  <main id="main" data-menu-inert>
+    <Hero />
+    <Introduction />
+    <Services />
+    <Emergency />
+    <Automotive />
+    <Residential />
+    <Gates />
+    <WhyUs />
+    <Coverage />
+    <Gallery />
+    <Faq />
+    <FinalCta />
+  </main>
+
+  <Footer />
+  <FloatingActions />
+</BaseLayout>

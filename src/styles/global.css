@@ -1,0 +1,184 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────
+   Design tokens
+   Palette: a quiet reinterpretation of the brand's Costa Rican
+   blue / red / white — warm paper, deep ink, one cobalt accent.
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-paper: #f5f5f1;
+  --color-surface: #ffffff;
+  --color-ink: #0a0f1a;
+  --color-ink-soft: #222a38;
+  --color-muted: #5c6371;
+  --color-line: #e2e2dc;
+
+  --color-cobalt: #1d4ed8;
+  --color-cobalt-soft: #dfe6fb;
+  /* Accent for dark surfaces (≥7:1 on ink). */
+  --color-cobalt-bright: #7c9cff;
+  --color-signal: #d7262e;
+  --color-live: #17a34a;
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Fluid type — only the steps that have a compositional job. */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1rem;
+  --text-label--letter-spacing: 0.08em;
+  --text-hero: clamp(2.75rem, min(6vw + 0.5rem, 9.5svh), 6.75rem);
+  --text-hero--line-height: 0.95;
+  --text-hero--letter-spacing: -0.045em;
+  --text-menu: clamp(2.375rem, 9.5vw + 0.25rem, 4.25rem);
+  --text-menu--line-height: 1.02;
+  --text-menu--letter-spacing: -0.045em;
+
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-live-ping: live-ping 2.4s var(--ease-premium) infinite;
+
+  /* Entrance motion for above-the-fold content. CSS (not JS) so it starts on
+     first paint and never waits for hydration. `rise` is transform-only and
+     unmasked: the headline (the LCP element) is fully painted on the first
+     frame — animating its opacity delayed LCP by ~1 s on mobile. */
+  --animate-rise: rise 1s var(--ease-premium) both;
+  --animate-fade-up: fade-up 0.9s var(--ease-premium) both;
+  --animate-draw-x: draw-x 1.2s var(--ease-premium) both;
+
+  @keyframes rise {
+    from {
+      transform: translate3d(0, 0.32em, 0);
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.75rem, 0);
+      filter: blur(3px);
+    }
+  }
+  @keyframes nudge {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 3px 0;
+    }
+  }
+  @keyframes draw-x {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @keyframes live-ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    70%,
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+    }
+  }
+}
+
+/* Page container: fluid gutter, capped measure for large screens. */
+@utility container-x {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+
+/* Directional underline: draws in from the left, leaves to the right. */
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 100% 100%;
+  transition: background-size 450ms var(--ease-premium);
+
+  @media (hover: hover) {
+    &:hover {
+      background-size: 100% 1px;
+      background-position: 0% 100%;
+    }
+  }
+  &:focus-visible {
+    background-size: 100% 1px;
+    background-position: 0% 100%;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    /* Lets `height: auto` animate (e.g. the FAQ <details>); ignored where unsupported. */
+    interpolate-size: allow-keywords;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  ::selection {
+    @apply bg-ink text-paper;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-cobalt;
+  }
+}
+
+/* Scroll-driven progress hairline (no JS; ignored where unsupported). */
+.scroll-progress {
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      animation: progress-grow linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes progress-grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

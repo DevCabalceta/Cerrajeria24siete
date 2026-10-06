@@ -1,0 +1,112 @@
+---
+import { WhatsAppIcon } from '../ui/icons';
+import { whatsappHref } from '../../utils/contact';
+---
+
+<!--
+  Floating actions (bottom-right): WhatsApp + back-to-top with a reading-progress
+  ring. They appear once the hero is behind and stay visible to the very end.
+-->
+<div
+  id="floating-actions"
+  data-menu-inert
+  data-show-wa="false"
+  data-show-top="false"
+  class="group/fab pointer-events-none fixed right-[max(1rem,env(safe-area-inset-right))] bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6"
+>
+  <!-- Back to top -->
+  <a
+    href="#inicio"
+    data-to-top
+    aria-label="Volver arriba"
+    class="group/top pointer-events-auto relative grid size-11 translate-y-3 scale-90 place-items-center rounded-full bg-paper/90 text-ink opacity-0 shadow-[0_10px_30px_-12px_rgb(10_15_26/0.45)] ring-1 ring-ink/10 backdrop-blur-md transition-[opacity,translate,scale,visibility] duration-500 ease-spring invisible group-data-[show-top=true]/fab:visible group-data-[show-top=true]/fab:translate-y-0 group-data-[show-top=true]/fab:scale-100 group-data-[show-top=true]/fab:opacity-100 hover:bg-white active:scale-90"
+  >
+    <svg viewBox="0 0 44 44" class="absolute inset-0 size-full -rotate-90" aria-hidden="true">
+      <circle cx="22" cy="22" r="20" fill="none" class="stroke-ink/10" stroke-width="2" />
+      <circle cx="22" cy="22" r="20" fill="none" pathLength="100" class="progress-ring stroke-cobalt" stroke-width="2" stroke-linecap="round" />
+    </svg>
+    <svg viewBox="0 0 16 16" class="relative size-3.5 transition-transform duration-500 ease-spring group-hover/top:-translate-y-0.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" />
+    </svg>
+  </a>
+
+  <!-- WhatsApp -->
+  <a
+    href={whatsappHref()}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Escribir por WhatsApp"
+    class="group/wa pointer-events-auto relative flex h-14 translate-y-4 scale-90 items-center rounded-full bg-ink text-paper opacity-0 shadow-[0_14px_36px_-12px_rgb(10_15_26/0.55)] ring-1 ring-paper/20 transition-[opacity,translate,scale,visibility] delay-75 duration-500 ease-spring invisible group-data-[show-wa=true]/fab:visible group-data-[show-wa=true]/fab:translate-y-0 group-data-[show-wa=true]/fab:scale-100 group-data-[show-wa=true]/fab:opacity-100 active:scale-95"
+  >
+    <span
+      class="hidden max-w-0 overflow-hidden pl-0 text-sm font-medium tracking-[-0.01em] whitespace-nowrap opacity-0 transition-[max-width,opacity,padding] duration-500 ease-premium group-hover/wa:max-w-[8rem] group-hover/wa:pl-5 group-hover/wa:opacity-100 [@media(hover:hover)]:block"
+    >
+      Escríbanos
+    </span>
+    <span class="grid size-14 shrink-0 place-items-center">
+      <WhatsAppIcon className="size-6 transition-transform duration-500 ease-spring group-hover/wa:-rotate-12" />
+    </span>
+    <span class="absolute top-0.5 right-0.5 grid size-3.5 place-items-center rounded-full bg-ink" aria-hidden="true">
+      <span class="absolute size-2 rounded-full bg-live motion-safe:animate-live-ping"></span>
+      <span class="relative size-2 rounded-full bg-live"></span>
+    </span>
+  </a>
+</div>
+
+<style>
+  /* Reading progress, driven by the page scroll (no JS); a full ring where unsupported. */
+  .progress-ring {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+  @supports (animation-timeline: scroll()) {
+    .progress-ring {
+      animation: fab-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+  @keyframes fab-progress {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>
+
+<script>
+  const root = document.getElementById('floating-actions');
+  const toTop = root?.querySelector<HTMLAnchorElement>('[data-to-top]');
+
+  if (root && toTop) {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const vh = window.innerHeight;
+      root.dataset.showWa = String(y > vh * 0.6);
+      root.dataset.showTop = String(y > vh * 1.5);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    update();
+
+    toTop.addEventListener('click', (event) => {
+      event.preventDefault();
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      // Keep keyboard users in sync with where the page went.
+      const hero = document.getElementById('inicio');
+      if (hero) {
+        if (!hero.hasAttribute('tabindex')) hero.setAttribute('tabindex', '-1');
+        hero.focus({ preventScroll: true });
+      }
+      history.replaceState(null, '', '#inicio');
+    });
+  }
+</script>

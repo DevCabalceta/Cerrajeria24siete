@@ -1,0 +1,43 @@
+---
+import CoverageMap, { type CoverageProvince } from '../components/interactive/CoverageMap';
+import { business } from '../data/business';
+import { provinceShapes } from '../data/costa-rica-map';
+import { provinceOrder, provinceTiers, tierLabels } from '../data/coverage';
+import { telHref, whatsappHref } from '../utils/contact';
+
+const provinces: CoverageProvince[] = provinceOrder.map((id) => {
+  const shape = provinceShapes.find((p) => p.id === id);
+  if (!shape) throw new Error(`Missing map shape for province "${id}"`);
+  return {
+    ...shape,
+    tier: provinceTiers[id],
+    href: whatsappHref(`Hola, necesito un cerrajero en ${shape.name}. Mi ubicación es: `),
+  };
+});
+---
+
+<section id="cobertura" aria-labelledby="cobertura-title" class="relative bg-ink py-24 text-paper sm:py-28 lg:py-36">
+  <div class="container-x">
+    <header class="grid gap-y-6 lg:grid-cols-12 lg:items-end lg:gap-x-10">
+      <div class="lg:col-span-7">
+        <p class="flex items-center gap-3 font-mono text-label text-paper/60 uppercase">
+          <span class="text-paper">(08)</span>
+          Cobertura
+        </p>
+        <h2
+          id="cobertura-title"
+          class="mt-5 text-[clamp(2.25rem,4.5vw+0.75rem,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance"
+        >
+          {business.coverage.areas.join(', ')}… y todo el país.
+        </h2>
+      </div>
+      <p class="max-w-[30rem] text-pretty text-paper/70 lg:col-span-5 lg:justify-self-end lg:pb-2 lg:text-[1.0625rem]">
+        {business.coverage.summary}, en perímetro urbano y rural. Elija su provincia y escríbanos desde ahí.
+      </p>
+    </header>
+
+    <div class="mt-14 lg:mt-20">
+      <CoverageMap client:visible provinces={provinces} tiers={tierLabels} phone={{ href: telHref, display: business.phone.display }} />
+    </div>
+  </div>
+</section>

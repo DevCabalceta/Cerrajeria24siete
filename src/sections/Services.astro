@@ -1,0 +1,52 @@
+---
+import ServiceDial, { type DialCategory } from '../components/interactive/ServiceDial';
+import { business } from '../data/business';
+import { serviceCategories, services } from '../data/services';
+import { telHref, whatsappHref } from '../utils/contact';
+
+const categories: DialCategory[] = serviceCategories.map((category) => ({
+  ...category,
+  services: services
+    .filter((service) => service.category === category.id)
+    .map((service) => ({
+      title: service.title,
+      summary: service.summary,
+      href: whatsappHref(`Hola, necesito: ${service.title}.`),
+    })),
+}));
+---
+
+<section id="servicios" aria-labelledby="servicios-title" class="relative bg-ink py-24 text-paper sm:py-28 lg:py-36">
+  <div class="container-x">
+    <header class="grid gap-y-6 lg:grid-cols-12 lg:items-end lg:gap-x-10">
+      <div class="lg:col-span-7">
+        <p class="flex items-center gap-3 font-mono text-label text-paper/55 uppercase">
+          <span class="text-paper">(02)</span>
+          Servicios
+        </p>
+        <h2
+          id="servicios-title"
+          class="mt-5 text-[clamp(2.25rem,4.5vw+0.75rem,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance"
+        >
+          De la llave al portón.
+        </h2>
+      </div>
+      <p class="max-w-[30rem] text-paper/60 lg:col-span-5 lg:justify-self-end lg:pb-2 lg:text-[1.0625rem]">
+        {services.length} servicios en {serviceCategories.length} especialidades, a domicilio, las {business.availability.long}.
+        Gire el dial o elija una especialidad.
+      </p>
+    </header>
+
+    <div class="mt-14 lg:mt-20">
+      <ServiceDial client:visible categories={categories} phone={{ href: telHref, display: business.phone.display }} />
+    </div>
+  </div>
+
+  <!-- Without JS the dial can't turn: show every speciality instead. -->
+  <noscript>
+    <style is:inline>
+      [data-service-panel] { display: block !important; margin-bottom: 4rem; }
+      [data-service-panel] * { opacity: 1 !important; transform: none !important; }
+    </style>
+  </noscript>
+</section>

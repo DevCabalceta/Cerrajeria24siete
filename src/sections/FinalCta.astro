@@ -1,0 +1,170 @@
+---
+import Button from '../components/ui/Button';
+import { MailIcon } from '../components/ui/icons';
+import { business } from '../data/business';
+import { mailHref, telHref, whatsappHref } from '../utils/contact';
+
+// The local number, split into groups, drives the combination wheels.
+const groups = business.phone.short.split(' ').map((group) => group.split('').map(Number));
+const DIGITS = Array.from({ length: 30 }, (_, i) => i % 10);
+let wheelIndex = 0;
+---
+
+<section id="contacto" aria-labelledby="contacto-title" class="relative overflow-hidden bg-ink py-28 text-paper sm:py-32 lg:py-40">
+  <div class="container-x">
+    <p class="flex items-center gap-3 font-mono text-label text-paper/60 uppercase">
+      <span class="text-paper">(11)</span>
+      Contacto
+    </p>
+    <h2
+      id="contacto-title"
+      class="mt-5 max-w-[16ch] text-[clamp(2.25rem,4.5vw+0.75rem,4.75rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance"
+    >
+      La combinación que abre su puerta.
+    </h2>
+
+    <!-- The phone number as combination wheels. The whole number is the call link. -->
+    <a
+      href={telHref}
+      aria-label={`Llamar al ${business.phone.display}`}
+      class="group/combo mt-12 inline-block rounded-2xl focus-visible:outline-offset-8 sm:mt-16"
+    >
+      <span class="flex items-center gap-3 font-mono text-label text-paper/60 uppercase">
+        <span class="text-paper">+506</span>
+        <span class="h-px w-6 bg-paper/25" aria-hidden="true"></span>
+        Línea directa
+      </span>
+      <span
+        data-combo
+        aria-hidden="true"
+        class="mt-4 flex items-center gap-[0.25em] font-mono text-[clamp(2.5rem,12vw,9.5rem)] leading-none font-medium tracking-[-0.06em] tabular-nums"
+      >
+        {
+          groups.map((group, g) => (
+            <>
+              {g > 0 && (
+                <span class="mx-[0.12em] block size-[0.1em] rounded-full bg-paper/30 transition-colors duration-500 group-hover/combo:bg-cobalt-bright" />
+              )}
+              <span class="flex gap-[0.04em]">
+                {group.map((digit) => {
+                  const i = wheelIndex++;
+                  return (
+                    <span class="wheel relative block h-[1em] w-[0.62em] overflow-hidden rounded-[0.08em] bg-paper/[0.04] ring-1 ring-paper/10 ring-inset">
+                      <span
+                        class="strip block"
+                        style={`--to:${-(20 + digit)}em;--from:${-((digit + 3 + i * 3) % 10)}em;--i:${i}`}
+                      >
+                        {DIGITS.map((d) => (
+                          <span class="block h-[1em] text-center leading-none">{d}</span>
+                        ))}
+                      </span>
+                      <span class="pointer-events-none absolute inset-0 bg-[linear-gradient(rgb(10_15_26/0.55),transparent_28%,transparent_72%,rgb(10_15_26/0.55))]" />
+                    </span>
+                  );
+                })}
+              </span>
+            </>
+          ))
+        }
+      </span>
+    </a>
+
+    <div>
+    <p data-combo-status class="mt-6 inline-flex items-center gap-2 rounded-full bg-paper/[0.08] px-3.5 py-2 font-mono text-label text-paper/80 uppercase">
+      <span class="relative grid size-2 place-items-center" aria-hidden="true">
+        <span class="absolute inset-0 rounded-full bg-live motion-safe:animate-live-ping"></span>
+        <span class="relative size-1.5 rounded-full bg-live"></span>
+      </span>
+      Combinación correcta · Abierto 24/7
+    </p>
+    </div>
+
+    <div class="mt-14 grid gap-10 border-t border-paper/15 pt-10 lg:mt-20 lg:grid-cols-12 lg:items-end lg:gap-x-10">
+      <div class="flex flex-col gap-3 sm:flex-row lg:col-span-7">
+        <Button href={telHref} variant="inverse" icon="phone" size="lg" className="sm:min-w-[13rem]">Llamar ahora</Button>
+        <Button href={whatsappHref()} variant="outline" icon="whatsapp" arrow external size="lg" className="sm:min-w-[13rem]">
+          Escribir por WhatsApp
+        </Button>
+      </div>
+
+      <dl class="grid gap-6 text-sm sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1 xl:grid-cols-2">
+        <div class="sm:col-span-2 lg:col-span-1 xl:col-span-2">
+          <dt class="font-mono text-label text-paper/60 uppercase">Correo</dt>
+          <dd class="mt-1.5">
+            <a href={mailHref} class="inline-flex max-w-full items-center gap-2">
+              <MailIcon className="size-4 shrink-0 text-paper/60" />
+              <span class="link-underline min-w-0 pb-0.5 [overflow-wrap:anywhere]">{business.email}</span>
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt class="font-mono text-label text-paper/60 uppercase">Horario</dt>
+          <dd class="mt-1.5 text-paper/80">{business.availability.long}</dd>
+        </div>
+        <div>
+          <dt class="font-mono text-label text-paper/60 uppercase">Cotización</dt>
+          <dd class="mt-1.5 text-paper/80">Sin ningún compromiso, por teléfono o WhatsApp.</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Default (no JS / reduced motion): every wheel already shows its digit. */
+  .strip {
+    transform: translateY(var(--to));
+  }
+  [data-combo][data-state='ready'] .strip {
+    transform: translateY(var(--from));
+    transition: none;
+  }
+  [data-combo][data-state='set'] .strip {
+    transform: translateY(var(--to));
+    transition: transform calc(1.1s + var(--i) * 140ms) var(--ease-premium);
+  }
+  [data-combo-status] {
+    transition:
+      opacity 500ms var(--ease-premium),
+      translate 500ms var(--ease-premium);
+  }
+  [data-combo-status][data-state='ready'] {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-combo][data-state='ready'] .strip {
+      transform: translateY(var(--to));
+    }
+    [data-combo-status][data-state='ready'] {
+      opacity: 1;
+      translate: none;
+    }
+  }
+</style>
+
+<script>
+  // Scramble the wheels off-screen, then dial the number when it scrolls into view.
+  const combo = document.querySelector<HTMLElement>('[data-combo]');
+  const status = document.querySelector<HTMLElement>('[data-combo-status]');
+
+  if (combo && status) {
+    combo.dataset.state = 'ready';
+    status.dataset.state = 'ready';
+    const wheels = combo.querySelectorAll('.strip').length;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        requestAnimationFrame(() => {
+          combo.dataset.state = 'set';
+          // Status appears once the last wheel has landed.
+          window.setTimeout(() => (status.dataset.state = 'set'), 1100 + wheels * 140);
+        });
+      },
+      { threshold: 0.6 },
+    );
+    observer.observe(combo);
+  }
+</script>

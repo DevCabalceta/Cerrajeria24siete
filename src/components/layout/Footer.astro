@@ -1,0 +1,178 @@
+---
+import LiveStatus from '../ui/LiveStatus';
+import Logo from '../ui/Logo';
+import { ArrowUpRightIcon, MailIcon, PhoneIcon, WhatsAppIcon } from '../ui/icons';
+import { business } from '../../data/business';
+import { mobileNav } from '../../data/navigation';
+import { serviceCategories } from '../../data/services';
+import { mailHref, telHref, whatsappHref } from '../../utils/contact';
+
+const year = new Date().getFullYear();
+const brand = [...'Cerrajería'].map((char) => ({ char, muted: false })).concat([...'24siete'].map((char) => ({ char, muted: true })));
+---
+
+<footer data-menu-inert class="relative overflow-hidden bg-ink text-paper">
+  <div class="container-x pb-[calc(9rem+env(safe-area-inset-bottom))]">
+    <div class="grid gap-x-10 gap-y-12 border-t border-paper/15 pt-16 sm:grid-cols-2 sm:pt-20 lg:grid-cols-12">
+      <!-- Brand -->
+      <div class="sm:col-span-2 lg:col-span-4">
+        <a href="#inicio" class="group -m-2 inline-block rounded-xl p-2" aria-label={`${business.name}, ir al inicio`}>
+          <Logo tone="paper" />
+        </a>
+        <p class="mt-6 max-w-[22rem] text-pretty text-paper/70">
+          {business.tagline}. Cerrajería en general y portones eléctricos a domicilio, en todo Costa Rica.
+        </p>
+        <div class="mt-6">
+          <LiveStatus label={business.availability.label} tone="paper" />
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav aria-label="Pie de página" class="lg:col-span-2 lg:col-start-6">
+        <p class="font-mono text-label text-paper/60 uppercase">Navegación</p>
+        <ul class="mt-5 space-y-3">
+          {
+            mobileNav.map((item) => (
+              <li>
+                <a href={item.href} class="link-underline pb-0.5 text-[0.9375rem] text-paper/85 transition-colors hover:text-paper">
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <!-- Specialities -->
+      <div class="lg:col-span-2">
+        <p class="font-mono text-label text-paper/60 uppercase">Especialidades</p>
+        <ul class="mt-5 space-y-3">
+          {
+            serviceCategories.map((category) => (
+              <li>
+                <a href="#servicios" class="link-underline pb-0.5 text-[0.9375rem] text-paper/85 transition-colors hover:text-paper">
+                  {category.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div class="sm:col-span-2 lg:col-span-3">
+        <p class="font-mono text-label text-paper/60 uppercase">Contacto</p>
+        <ul class="mt-5 space-y-3 text-[0.9375rem]">
+          <li>
+            <a href={telHref} class="group/f inline-flex items-center gap-3 text-paper/85 hover:text-paper">
+              <PhoneIcon className="size-4 text-paper/60 transition-transform duration-500 ease-spring group-hover/f:-rotate-12" />
+              <span class="link-underline pb-0.5 tabular-nums">{business.phone.display}</span>
+            </a>
+          </li>
+          <li>
+            <a href={whatsappHref()} target="_blank" rel="noopener noreferrer" class="group/f inline-flex items-center gap-3 text-paper/85 hover:text-paper">
+              <WhatsAppIcon className="size-4 text-paper/60 transition-transform duration-500 ease-spring group-hover/f:-rotate-12" />
+              <span class="link-underline pb-0.5">WhatsApp</span>
+            </a>
+          </li>
+          <li>
+            <a href={mailHref} class="group/f inline-flex max-w-full items-center gap-3 text-paper/85 hover:text-paper">
+              <MailIcon className="size-4 shrink-0 text-paper/60" />
+              <span class="link-underline min-w-0 pb-0.5 [overflow-wrap:anywhere]">{business.email}</span>
+            </a>
+          </li>
+          <li class="pt-2 text-sm text-paper/60">
+            {business.availability.long} · {business.coverage.areas.join(', ')} y todo el país
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Full-width wordmark + key. Sized in container units so it always spans the
+         column: the word is ~7.31em wide, so 12.2cqw ≈ 89% leaves room for the key.
+         Hover: letters lift in a short wave and the key turns (flips on its axis). -->
+    <div aria-hidden="true" class="@container mt-20 sm:mt-28">
+      <div class="group/wordmark flex items-start select-none">
+        <p data-wordmark class="flex text-[12.2cqw] leading-[0.8] font-medium tracking-[-0.06em] whitespace-nowrap">
+          {
+            brand.map((letter, i) => (
+              <span class:list={['block overflow-hidden pt-[0.08em] pb-[0.06em]', letter.muted ? 'text-paper/30' : 'text-paper']}>
+                <span class="letter block group-hover/wordmark:-translate-y-[0.06em]" style={`--i:${i}`}>
+                  {letter.char}
+                </span>
+              </span>
+            ))
+          }
+        </p>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="mt-[2.6cqw] ml-[1.4cqw] size-[7.4cqw] shrink-0 text-cobalt-bright transition-transform duration-700 ease-premium group-hover/wordmark:rotate-x-180"
+        >
+          <circle cx="7.5" cy="12" r="4" />
+          <path d="M11.5 12h10M18.5 12v3M15.5 12v2" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="mt-8 grid gap-4 border-t border-paper/15 pt-6 font-mono text-label text-paper/60 uppercase sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+      <p>© {year} {business.name} · {business.country}</p>
+      <a
+        href="https://devcabalceta.vercel.app/es"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group/dev inline-flex items-center gap-1.5 justify-self-start normal-case tracking-normal sm:justify-self-center"
+      >
+        <span class="font-sans text-[0.8125rem] text-paper/60">Desarrollado por</span>
+        <span class="link-underline pb-0.5 font-sans text-[0.8125rem] font-medium text-paper">Gabriel Cabalceta</span>
+        <ArrowUpRightIcon className="size-3 text-paper/70 transition-transform duration-500 ease-spring group-hover/dev:rotate-45" />
+      </a>
+      <a href="#inicio" class="group/top inline-flex items-center gap-3 justify-self-start text-paper/80 hover:text-paper sm:justify-self-end">
+        Volver arriba
+        <span class="grid size-9 place-items-center rounded-full ring-1 ring-paper/20 transition-colors duration-300 group-hover/top:bg-paper group-hover/top:text-ink">
+          <svg viewBox="0 0 24 24" class="size-4 transition-transform duration-700 ease-spring group-hover/top:-rotate-90" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="16.5" r="3.5" />
+            <path d="M12 13V3.5M12 6.5h2.5M12 9h2" />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Hover lift: a short left-to-right wave (translate, so it composes with the reveal). */
+  .letter {
+    transition: translate 700ms var(--ease-premium) calc(var(--i) * 14ms);
+  }
+  /* Letters rise from their masks once the footer comes into view. */
+  [data-wordmark][data-state='ready'] .letter {
+    transform: translateY(120%);
+  }
+  [data-wordmark][data-state='set'] .letter {
+    transform: none;
+    transition:
+      transform 1s var(--ease-premium) calc(var(--i) * 35ms),
+      translate 700ms var(--ease-premium) calc(var(--i) * 14ms);
+  }
+</style>
+
+<script>
+  const wordmark = document.querySelector<HTMLElement>('[data-wordmark]');
+  if (wordmark && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    wordmark.dataset.state = 'ready';
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        requestAnimationFrame(() => (wordmark.dataset.state = 'set'));
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(wordmark);
+  }
+</script>

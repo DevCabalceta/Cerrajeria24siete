@@ -1,0 +1,92 @@
+---
+import DesktopNav from '../interactive/DesktopNav';
+import MobileMenu from '../interactive/MobileMenu';
+import Button from '../ui/Button';
+import LiveStatus from '../ui/LiveStatus';
+import Logo from '../ui/Logo';
+import { PhoneIcon } from '../ui/icons';
+import { business } from '../../data/business';
+import { mobileNav, primaryNav } from '../../data/navigation';
+import { contactLinks, telHref, whatsappHref } from '../../utils/contact';
+---
+
+<!-- Scroll state is derived from this sentinel leaving the viewport: no scroll listeners. -->
+<div id="scroll-sentinel" aria-hidden="true" class="pointer-events-none absolute top-0 left-0 h-3 w-px"></div>
+
+<header id="site-header" data-scrolled="false" class="group/header fixed inset-x-0 top-0 z-50">
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 -z-10 bg-paper/90 opacity-0 backdrop-blur-xl backdrop-saturate-150 transition-opacity duration-500 ease-premium group-data-[scrolled=true]/header:opacity-100"
+  >
+  </div>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-ink/[0.07] opacity-0 transition-opacity duration-500 ease-premium group-data-[scrolled=true]/header:opacity-100"
+  >
+    <div class="scroll-progress h-full bg-cobalt/60"></div>
+  </div>
+
+  <div
+    class="container-x flex h-16 items-center justify-between gap-4 transition-[height] duration-500 ease-premium lg:grid lg:h-20 lg:grid-cols-[1fr_auto_1fr] lg:group-data-[scrolled=true]/header:h-16"
+  >
+    <div data-menu-inert class="flex items-center gap-5 justify-self-start">
+      <a href="#inicio" class="group -m-2 rounded-xl p-2" aria-label={`${business.name}, ir al inicio`}>
+        <Logo />
+      </a>
+      <span aria-hidden="true" class="hidden h-4 w-px bg-ink/12 xl:block"></span>
+      <span class="hidden xl:flex"><LiveStatus label={business.availability.label} /></span>
+    </div>
+
+    <nav aria-label="Principal" class="hidden lg:block">
+      <DesktopNav client:idle items={primaryNav} />
+    </nav>
+
+    <div class="flex items-center gap-2 justify-self-end sm:gap-3">
+      <div data-menu-inert class="flex items-center gap-2 sm:gap-3">
+        <a
+          href={telHref}
+          aria-label={`Llamar al ${business.phone.display}`}
+          class="group/tel hidden h-11 shrink-0 items-center gap-2.5 rounded-full px-3.5 text-sm whitespace-nowrap text-ink transition-colors duration-300 ease-premium hover:bg-ink/[0.05] lg:inline-flex xl:px-2 xl:hover:bg-transparent"
+        >
+          <PhoneIcon className="size-4 transition-transform duration-500 ease-spring group-hover/tel:-rotate-12" />
+          <span class="link-underline hidden pb-0.5 tabular-nums xl:inline">{business.phone.display}</span>
+        </a>
+
+        <!-- Mobile: calling is the primary action. -->
+        <!-- Responsive visibility lives on wrappers so it never fights the component's own display. -->
+        <div class="hidden min-[22.5rem]:flex sm:hidden">
+          <Button href={telHref} size="md" icon="phone">Llamar</Button>
+        </div>
+        <!-- Very narrow phones (<360px): icon-only call button keeps the menu toggle on screen. -->
+        <a
+          href={telHref}
+          aria-label={`Llamar al ${business.phone.display}`}
+          class="grid size-11 place-items-center rounded-full bg-ink text-paper transition-transform duration-300 ease-premium active:scale-[0.97] min-[22.5rem]:hidden"
+        >
+          <PhoneIcon className="size-[1.1rem]" />
+        </a>
+        <div class="hidden sm:flex lg:hidden">
+          <Button href={telHref} variant="quiet" size="md" icon="phone">Llamar</Button>
+        </div>
+        <div class="hidden sm:flex">
+          <Button href={whatsappHref()} external arrow size="md" icon="whatsapp">WhatsApp</Button>
+        </div>
+      </div>
+
+      <div class="lg:hidden">
+        <MobileMenu client:idle={{ timeout: 1500 }} items={mobileNav} contact={contactLinks} />
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.getElementById('site-header');
+  const sentinel = document.getElementById('scroll-sentinel');
+
+  if (header && sentinel) {
+    new IntersectionObserver(([entry]) => {
+      header.dataset.scrolled = String(!entry.isIntersecting);
+    }).observe(sentinel);
+  }
+</script>

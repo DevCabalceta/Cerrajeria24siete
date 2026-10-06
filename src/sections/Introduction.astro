@@ -1,0 +1,20 @@
+---
+import PinTumblerStory from '../components/interactive/PinTumblerStory';
+import { business } from '../data/business';
+
+// Copy condensed from the "Quiénes somos" block of the current site. This section is also
+// the company section (#empresa): the site holds no further verifiable corporate history.
+const statement = `${business.experienceShort} abriendo, reparando e instalando cerraduras. A domicilio, en todo Costa Rica, a cualquier hora.`;
+---
+
+<section id="empresa" aria-labelledby="empresa-title" class="relative">
+  <PinTumblerStory
+    client:idle
+    titleId="empresa-title"
+    eyebrow="Quiénes somos"
+    statement={statement}
+    accentWords={['35', 'años']}
+    points={business.claims}
+    cta={{ label: 'Ver servicios', href: '#servicios' }}
+  />
+</section>

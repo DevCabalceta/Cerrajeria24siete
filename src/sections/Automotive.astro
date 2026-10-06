@@ -1,0 +1,35 @@
+---
+import AutoFob from '../components/interactive/AutoFob';
+import { autoModes } from '../data/automotive';
+import { business } from '../data/business';
+import { telHref, whatsappHref } from '../utils/contact';
+
+const modes = autoModes.map((mode) => ({ ...mode, href: whatsappHref(`Hola, necesito: ${mode.service}.`) }));
+---
+
+<section id="automotriz" aria-labelledby="automotriz-title" class="relative py-24 sm:py-28 lg:py-36">
+  <div class="container-x">
+    <header class="grid gap-y-6 lg:grid-cols-12 lg:items-end lg:gap-x-10">
+      <div class="lg:col-span-7">
+        <p class="flex items-center gap-3 font-mono text-label text-muted uppercase">
+          <span class="text-ink">(04)</span>
+          Automotriz
+        </p>
+        <h2
+          id="automotriz-title"
+          class="mt-5 text-[clamp(2.25rem,4.5vw+0.75rem,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance"
+        >
+          Abrimos su carro. Programamos su llave.
+        </h2>
+      </div>
+      <p class="max-w-[30rem] text-pretty text-muted lg:col-span-5 lg:justify-self-end lg:pb-2 lg:text-[1.0625rem]">
+        Cerrajería vehicular a domicilio, {business.availability.long}. Presione un botón del control para ver cada
+        servicio.
+      </p>
+    </header>
+
+    <div class="mt-14 lg:mt-20">
+      <AutoFob client:visible modes={modes} phone={{ href: telHref, display: business.phone.display }} />
+    </div>
+  </div>
+</section>

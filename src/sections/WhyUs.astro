@@ -1,0 +1,45 @@
+---
+import KeyCutter from '../components/interactive/KeyCutter';
+import Button from '../components/ui/Button';
+import { business } from '../data/business';
+import { reasons } from '../data/reasons';
+import { telHref, whatsappHref } from '../utils/contact';
+---
+
+<section id="por-que" aria-labelledby="por-que-title" class="relative py-24 sm:py-28 lg:py-36">
+  <div class="container-x">
+    <header class="grid gap-y-6 lg:grid-cols-12 lg:items-end lg:gap-x-10">
+      <div class="lg:col-span-7">
+        <p class="flex items-center gap-3 font-mono text-label text-muted uppercase">
+          <span class="text-ink">(07)</span>
+          Por qué elegirnos
+        </p>
+        <h2
+          id="por-que-title"
+          class="mt-5 text-[clamp(2.25rem,4.5vw+0.75rem,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance"
+        >
+          Hecho a la medida, como una buena llave.
+        </h2>
+      </div>
+      <p class="max-w-[30rem] text-pretty text-muted lg:col-span-5 lg:justify-self-end lg:pb-2 lg:text-[1.0625rem]">
+        Cinco razones para confiar en {business.name}, cortadas una por una.
+      </p>
+    </header>
+
+    <div class="mt-14 lg:mt-20">
+      <KeyCutter client:idle reasons={reasons} />
+    </div>
+
+    <div class="mt-14 flex flex-col gap-4 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between lg:mt-20">
+      <p class="text-lg font-medium tracking-[-0.015em]">Cotice ahora mismo, sin ningún compromiso.</p>
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+        <Button href={whatsappHref('Hola, quisiera una cotización.')} icon="whatsapp" arrow external size="lg">
+          Cotizar por WhatsApp
+        </Button>
+        <a href={telHref} class="text-sm text-ink">
+          <span class="link-underline pb-0.5 tabular-nums">o llame al {business.phone.display}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

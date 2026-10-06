@@ -1,0 +1,278 @@
+---
+import { getImage, Image } from 'astro:assets';
+import Button from '../components/ui/Button';
+import { ArrowUpRightIcon } from '../components/ui/icons';
+import { works } from '../data/works';
+import { whatsappHref } from '../utils/contact';
+
+// Large versions for the viewer, generated at build time.
+const full = await Promise.all(
+  works.map((work) => getImage({ src: work.image, width: Math.min(1400, work.image.width), format: 'webp', quality: 82 })),
+);
+---
+
+<section id="galeria" aria-labelledby="galeria-title" class="relative py-24 sm:py-28 lg:py-36">
+  <div class="container-x">
+    <header class="grid gap-y-6 lg:grid-cols-12 lg:items-end lg:gap-x-10">
+      <div class="lg:col-span-7">
+        <p class="flex items-center gap-3 font-mono text-label text-muted uppercase">
+          <span class="text-ink">(09)</span>
+          Galería
+        </p>
+        <h2
+          id="galeria-title"
+          class="mt-5 text-[clamp(2.25rem,4.5vw+0.75rem,4.5rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance"
+        >
+          Trabajos reales, abiertos uno por uno.
+        </h2>
+      </div>
+      <p class="max-w-[30rem] text-pretty text-muted lg:col-span-5 lg:justify-self-end lg:pb-2 lg:text-[1.0625rem]">
+        Algunos de nuestros trabajos. Las cajillas se abren al llegar; toque una para verla en grande.
+      </p>
+    </header>
+
+    <!-- Wall of safe-deposit boxes -->
+    <div
+      class="mt-14 rounded-[1.75rem] bg-[linear-gradient(160deg,#d9dcdf,#b5bbc1_55%,#9aa1a8)] p-2 shadow-[0_30px_60px_-40px_rgb(10_15_26/0.6)] ring-1 ring-ink/10 sm:p-3 lg:mt-20"
+    >
+      <ul class="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
+        {
+          works.map((work, i) => (
+            <li>
+              <button
+                type="button"
+                data-box
+                data-index={i}
+                aria-label={`Ver en grande: ${work.title}`}
+                class="group/box relative block aspect-[4/5] w-full overflow-hidden rounded-[0.9rem] bg-ink [perspective:1400px] focus-visible:outline-offset-4"
+              >
+                <Image
+                  src={work.image}
+                  alt={work.alt}
+                  widths={[320, 480, 640]}
+                  sizes="(min-width: 48rem) 22vw, 46vw"
+                  loading="lazy"
+                  class="absolute inset-0 size-full scale-[1.08] object-cover transition-transform duration-[900ms] ease-premium group-hover/box:scale-100 group-focus-visible/box:scale-100 group-data-[open=true]/box:scale-100"
+                />
+                <span class="pointer-events-none absolute inset-x-0 bottom-0 bg-[linear-gradient(transparent,rgb(10_15_26/0.85))] px-3 pt-10 pb-3 text-left text-paper sm:px-4 sm:pb-4">
+                  <span class="block font-mono text-label text-paper/75 uppercase">{work.category}</span>
+                  <span class="mt-1 flex items-end justify-between gap-2 text-sm leading-snug font-medium tracking-[-0.01em] sm:text-[0.9375rem]">
+                    {work.title}
+                    <ArrowUpRightIcon className="mb-0.5 size-3.5 shrink-0" />
+                  </span>
+                </span>
+
+                <!-- The door: swings open on its left hinge -->
+                <span
+                  aria-hidden="true"
+                  class="door absolute inset-0 origin-left rounded-[0.9rem] bg-[linear-gradient(150deg,#eef0f2,#c4c9ce_45%,#a3aab1)] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.5),inset_0_-12px_24px_-16px_rgb(10_15_26/0.35)] transition-transform duration-[900ms] ease-premium group-hover/box:[transform:rotateY(-104deg)] group-focus-visible/box:[transform:rotateY(-104deg)] group-data-[open=true]/box:[transform:rotateY(-104deg)]"
+                >
+                  <span class="absolute inset-3 rounded-[0.6rem] ring-1 ring-ink/15 sm:inset-4" />
+                  <span class="absolute top-1/2 left-0 h-10 w-1.5 -translate-y-[3.25rem] rounded-r bg-ink/25" />
+                  <span class="absolute top-1/2 left-0 h-10 w-1.5 translate-y-[0.75rem] rounded-r bg-ink/25" />
+                  <span class="absolute top-6 left-1/2 -translate-x-1/2 rounded-md bg-ink px-2.5 py-1 font-mono text-label text-paper tabular-nums sm:top-8">
+                    Nº {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="absolute top-1/2 left-1/2 grid size-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[linear-gradient(150deg,#f6f7f8,#aab1b8)] shadow-[0_2px_6px_rgb(10_15_26/0.25)] ring-1 ring-ink/15">
+                    <span class="relative block h-5 w-2">
+                      <span class="absolute top-0 left-1/2 size-2 -translate-x-1/2 rounded-full bg-ink" />
+                      <span class="absolute top-1.5 left-1/2 h-3.5 w-1 -translate-x-1/2 rounded-b bg-ink" />
+                    </span>
+                  </span>
+                  <span class="absolute right-3 bottom-6 h-1.5 w-8 rounded-full bg-ink/30 sm:right-4 sm:bottom-8" />
+                </span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-lg font-medium tracking-[-0.015em]">¿Necesita un trabajo como estos?</p>
+      <Button href={whatsappHref('Hola, vi sus trabajos y necesito una cotización.')} icon="whatsapp" arrow external size="lg">
+        Cotizar por WhatsApp
+      </Button>
+    </div>
+  </div>
+
+  <!-- Without JS the doors can't open: show the photos directly. -->
+  <noscript>
+    <style is:inline>
+      #galeria .door { display: none; }
+    </style>
+  </noscript>
+
+  <!-- Viewer: native modal dialog (focus trap + Escape for free) -->
+  <dialog
+    id="work-viewer"
+    aria-label="Trabajo en grande"
+    class="m-auto max-h-[92svh] w-[min(92vw,64rem)] overflow-visible bg-transparent p-0 text-paper backdrop:bg-ink/85 backdrop:backdrop-blur-sm"
+  >
+    <figure class="relative">
+      <img
+        data-viewer-img
+        src={full[0].src}
+        alt={works[0].alt}
+        width={full[0].attributes.width}
+        height={full[0].attributes.height}
+        class="mx-auto max-h-[78svh] w-auto rounded-[1.25rem] object-contain"
+      />
+      <figcaption class="mt-4 flex items-center justify-between gap-4">
+        <span>
+          <span data-viewer-category class="block font-mono text-label text-paper/75 uppercase">{works[0].category}</span>
+          <span data-viewer-title class="mt-1 block text-lg font-medium tracking-[-0.015em]">{works[0].title}</span>
+        </span>
+        <span class="flex items-center gap-2">
+          <span data-viewer-count class="mr-2 font-mono text-label text-paper/75 tabular-nums">01 / {String(works.length).padStart(2, '0')}</span>
+          <button type="button" data-viewer-prev aria-label="Trabajo anterior" class="grid size-11 place-items-center rounded-full bg-paper/10 transition-colors hover:bg-paper/20">
+            <ArrowUpRightIcon className="size-3.5 -rotate-135" />
+          </button>
+          <button type="button" data-viewer-next aria-label="Trabajo siguiente" class="grid size-11 place-items-center rounded-full bg-paper/10 transition-colors hover:bg-paper/20">
+            <ArrowUpRightIcon className="size-3.5 rotate-45" />
+          </button>
+          <button type="button" data-viewer-close aria-label="Cerrar" class="grid size-11 place-items-center rounded-full bg-paper text-ink transition-colors hover:bg-white">
+            <svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <path d="m4 4 8 8M12 4l-8 8" />
+            </svg>
+          </button>
+        </span>
+      </figcaption>
+    </figure>
+  </dialog>
+
+  <script
+    is:inline
+    type="application/json"
+    id="works-data"
+    set:html={JSON.stringify(
+      works.map((work, i) => ({
+        src: full[i].src,
+        width: full[i].attributes.width,
+        height: full[i].attributes.height,
+        alt: work.alt,
+        title: work.title,
+        category: work.category,
+      })),
+    )}
+  />
+</section>
+
+<style>
+  /* Dialog entrance: fade + slight scale, no JS. */
+  dialog {
+    opacity: 0;
+    scale: 0.97;
+    transition:
+      opacity 300ms var(--ease-premium),
+      scale 400ms var(--ease-premium),
+      overlay 300ms allow-discrete,
+      display 300ms allow-discrete;
+  }
+  dialog[open] {
+    opacity: 1;
+    scale: 1;
+  }
+  @starting-style {
+    dialog[open] {
+      opacity: 0;
+      scale: 0.97;
+    }
+  }
+</style>
+
+<script>
+  interface WorkData {
+    src: string;
+    width: number;
+    height: number;
+    alt: string;
+    title: string;
+    category: string;
+  }
+
+  const dataEl = document.getElementById('works-data');
+  const dialog = document.getElementById('work-viewer') as HTMLDialogElement | null;
+  const items: WorkData[] = dataEl ? JSON.parse(dataEl.textContent ?? '[]') : [];
+  const boxes = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-box]'));
+
+  if (dialog && items.length) {
+    const img = dialog.querySelector<HTMLImageElement>('[data-viewer-img]');
+    const title = dialog.querySelector<HTMLElement>('[data-viewer-title]');
+    const category = dialog.querySelector<HTMLElement>('[data-viewer-category]');
+    const count = dialog.querySelector<HTMLElement>('[data-viewer-count]');
+    let current = 0;
+    let opener: HTMLElement | null = null;
+
+    const show = (index: number) => {
+      current = (index + items.length) % items.length;
+      const item = items[current];
+      if (img) {
+        img.src = item.src;
+        img.alt = item.alt;
+        img.width = item.width;
+        img.height = item.height;
+      }
+      if (title) title.textContent = item.title;
+      if (category) category.textContent = item.category;
+      if (count) count.textContent = `${String(current + 1).padStart(2, '0')} / ${String(items.length).padStart(2, '0')}`;
+    };
+
+    boxes.forEach((box) =>
+      box.addEventListener('click', () => {
+        opener = box;
+        show(Number(box.dataset.index));
+        document.documentElement.style.overflow = 'hidden';
+        dialog.showModal();
+        dialog.querySelector<HTMLElement>('[data-viewer-close]')?.focus();
+      }),
+    );
+
+    // Cleanup runs on every close path directly; the `close` event is only a
+    // fallback (it is queued, so it can lag behind the actual close).
+    const cleanup = () => {
+      document.documentElement.style.overflow = '';
+      opener?.focus({ preventScroll: true });
+      opener = null;
+    };
+    const closeViewer = () => {
+      if (dialog.open) dialog.close();
+      cleanup();
+    };
+
+    dialog.querySelector('[data-viewer-prev]')?.addEventListener('click', () => show(current - 1));
+    dialog.querySelector('[data-viewer-next]')?.addEventListener('click', () => show(current + 1));
+    dialog.querySelector('[data-viewer-close]')?.addEventListener('click', closeViewer);
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') show(current + 1);
+      if (event.key === 'ArrowLeft') show(current - 1);
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeViewer();
+      }
+    });
+    // Click on the backdrop (outside the figure) closes.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) closeViewer();
+    });
+    dialog.addEventListener('close', cleanup);
+  }
+
+  // Doors open one by one as the wall scrolls into view (hover only zooms).
+  const wall = boxes[0]?.closest('ul');
+  if (wall) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        boxes.forEach((box, i) => {
+          const door = box.querySelector<HTMLElement>('.door');
+          if (door) door.style.transitionDelay = `${i * 110}ms`;
+          box.dataset.open = 'true';
+        });
+        observer.disconnect();
+      },
+      { threshold: 0.25 },
+    );
+    observer.observe(wall);
+  }
+</script>

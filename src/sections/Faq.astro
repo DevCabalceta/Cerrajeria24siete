@@ -1,0 +1,96 @@
+---
+import Button from '../components/ui/Button';
+import { business } from '../data/business';
+import { faqs } from '../data/faq';
+import { telHref, whatsappHref } from '../utils/contact';
+
+// FAQPage structured data, built from exactly the visible questions.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+  })),
+};
+---
+
+<section id="preguntas" aria-labelledby="preguntas-title" class="relative border-t border-line bg-surface py-24 sm:py-28 lg:py-36">
+  <div class="container-x grid gap-y-12 lg:grid-cols-12 lg:gap-x-10">
+    <!-- Sticky intro -->
+    <div class="lg:col-span-5">
+      <div class="lg:sticky lg:top-28">
+        <p class="flex items-center gap-3 font-mono text-label text-muted uppercase">
+          <span class="text-ink">(10)</span>
+          Preguntas frecuentes
+        </p>
+        <h2
+          id="preguntas-title"
+          class="mt-5 text-[clamp(2.25rem,4vw+0.75rem,4rem)] leading-[0.98] font-medium tracking-[-0.045em] text-balance"
+        >
+          Lo que más nos preguntan.
+        </h2>
+        <p class="mt-6 max-w-[26rem] text-pretty text-muted lg:text-[1.0625rem]">
+          En una emergencia no espere a leerlo todo: llámenos, contestamos {business.availability.long}.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href={telHref} icon="phone" size="lg">Llamar ahora</Button>
+          <Button href={whatsappHref('Hola, tengo una pregunta.')} variant="quiet" icon="whatsapp" arrow external size="lg">
+            Preguntar
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion: native <details>, one open at a time via the shared name -->
+    <div class="lg:col-span-7">
+      {
+        faqs.map((faq, i) => (
+          <details name="faq" class="faq group/faq border-t border-line last:border-b" open={i === 0}>
+            <summary class="flex cursor-pointer list-none items-start gap-4 py-6 select-none sm:gap-6 [&::-webkit-details-marker]:hidden">
+              <span class="pt-1.5 font-mono text-label text-muted tabular-nums transition-colors duration-300 group-open/faq:text-cobalt">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="flex-1 text-lg leading-snug font-medium tracking-[-0.015em] text-pretty transition-transform duration-500 ease-premium group-hover/faq:translate-x-1 sm:text-xl">
+                {faq.question}
+              </span>
+              <!-- Padlock: the shackle lifts when the answer opens -->
+              <span
+                aria-hidden="true"
+                class="grid size-9 shrink-0 place-items-center rounded-full ring-1 ring-line transition-[background-color,box-shadow,color] duration-300 group-open/faq:bg-ink group-open/faq:text-paper group-open/faq:ring-ink"
+              >
+                <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                  <path
+                    d="M8 11V8a4 4 0 0 1 8 0v3"
+                    class="origin-[16px_11px] transition-transform duration-500 ease-spring group-open/faq:-translate-y-[2.5px] group-open/faq:-rotate-[22deg]"
+                  />
+                  <rect x="5.5" y="11" width="13" height="9.5" rx="2.25" fill="currentColor" stroke="none" />
+                </svg>
+              </span>
+            </summary>
+            <div class="pb-7 pl-[2.6rem] sm:pr-12 sm:pl-[calc(3rem+1.5rem)]">
+              <p class="max-w-[36rem] text-pretty text-muted">{faq.answer}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
+</section>
+
+<style>
+  /* Smooth open/close where ::details-content is supported; instant elsewhere. */
+  .faq::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 450ms var(--ease-premium),
+      content-visibility 450ms allow-discrete;
+  }
+  .faq[open]::details-content {
+    block-size: auto;
+  }
+</style>
