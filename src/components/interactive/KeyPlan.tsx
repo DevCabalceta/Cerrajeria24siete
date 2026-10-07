@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { AnimatePresence, MotionConfig, motion, useReducedMotion, useSpring, useTransform } from 'motion/react';
+import { AnimatePresence, MotionConfig, m, useReducedMotion, useSpring, useTransform } from 'motion/react';
 import type { DoorId, ResidentialMode, ResidentialModeId } from '../../data/residential';
 import Button from '../ui/Button';
+import { withLazyMotion } from '../../utils/motion';
 
 type Mode = ResidentialMode & { href: string };
 type DoorState = 'locked' | 'open' | 'denied';
@@ -81,10 +82,10 @@ function Door({ spec, state }: { spec: DoorSpec; state: DoorState }) {
     <g>
       <path d={wedge} className={`transition-[fill-opacity] duration-500 ${open ? 'fill-cobalt' : 'fill-ink'}`} fillOpacity={open ? 0.1 : 0} />
       <path d={swing} fill="none" className={open ? 'stroke-cobalt' : 'stroke-ink/30'} strokeDasharray="3 4" strokeWidth="1.2" />
-      <motion.line x1={hx} y1={hy} x2={x2} y2={y2} className={open ? 'stroke-cobalt' : 'stroke-ink'} strokeWidth="4" strokeLinecap="round" />
+      <m.line x1={hx} y1={hy} x2={x2} y2={y2} className={open ? 'stroke-cobalt' : 'stroke-ink'} strokeWidth="4" strokeLinecap="round" />
       <circle cx={hx} cy={hy} r="3.5" className="fill-paper stroke-ink" strokeWidth="1.5" />
       {/* Lock badge */}
-      <motion.g
+      <m.g
         initial={false}
         animate={denied ? { x: [0, -4, 4, -3, 3, 0] } : { x: 0 }}
         transition={{ duration: 0.45 }}
@@ -103,7 +104,7 @@ function Door({ spec, state }: { spec: DoorSpec; state: DoorState }) {
           strokeLinecap="round"
         />
         <rect x={bx - 4.5} y={by - 1} width="9" height="6.5" rx="1.5" className="fill-paper" />
-      </motion.g>
+      </m.g>
       <text x={bx + 16} y={by + 4} className="fill-ink/70 font-mono" style={{ fontSize: 11, letterSpacing: '0.06em' }}>
         {spec.code}
       </text>
@@ -172,11 +173,11 @@ function KeyGlyph({ id, active }: { id: ResidentialModeId; active: boolean }) {
  * plan shows which doors it opens — individual keys open one door, the master
  * opens all — and the combination change plays out step by step.
  */
-export default function KeyPlan({ modes, extras, phone }: KeyPlanProps) {
+function KeyPlan({ modes, extras, phone }: KeyPlanProps) {
   const [active, setActive] = useState<ResidentialModeId>('maestra');
   const [run, setRun] = useState(0);
   const [changeStep, setChangeStep] = useState(0);
-  const mode = modes.find((m) => m.id === active) ?? modes[0];
+  const mode = modes.find((option) => option.id === active) ?? modes[0];
   useChangeTimers(active === 'cambio', run, setChangeStep);
   const change = CHANGE_STEPS[changeStep];
 
@@ -253,22 +254,22 @@ export default function KeyPlan({ modes, extras, phone }: KeyPlanProps) {
         {/* Selector + detail */}
         <div className="min-w-0 lg:col-span-5">
           <div role="group" aria-label="Elija una llave" className="grid grid-cols-2 gap-2">
-            {modes.map((m) => {
-              const on = m.id === active;
+            {modes.map((option) => {
+              const on = option.id === active;
               return (
                 <button
-                  key={m.id}
+                  key={option.id}
                   type="button"
                   aria-pressed={on}
-                  onClick={() => select(m.id)}
+                  onClick={() => select(option.id)}
                   className={`group/key flex items-center gap-3 rounded-2xl p-3 text-left transition-[background-color,box-shadow] duration-300 ease-premium ${
                     on ? 'bg-surface shadow-[0_10px_30px_-18px_rgb(10_15_26/0.45)] ring-1 ring-ink/10' : 'ring-1 ring-ink/10 ring-inset hover:bg-surface/60'
                   }`}
                 >
-                  <KeyGlyph id={m.id} active={on} />
+                  <KeyGlyph id={option.id} active={on} />
                   <span className="min-w-0">
-                    <span className="block text-sm leading-tight font-medium tracking-[-0.01em] text-ink">{m.label}</span>
-                    <span className="mt-0.5 block font-mono text-[0.625rem] tracking-[0.06em] text-muted uppercase">{m.hint}</span>
+                    <span className="block text-sm leading-tight font-medium tracking-[-0.01em] text-ink">{option.label}</span>
+                    <span className="mt-0.5 block font-mono text-[0.625rem] tracking-[0.06em] text-muted uppercase">{option.hint}</span>
                   </span>
                 </button>
               );
@@ -278,7 +279,7 @@ export default function KeyPlan({ modes, extras, phone }: KeyPlanProps) {
           <div className="mt-8 border-t border-line pt-6">
             <h3 className="relative overflow-hidden pb-[0.08em]">
               <AnimatePresence mode="popLayout" initial={false}>
-                <motion.span
+                <m.span
                   key={mode.id}
                   className="block text-[clamp(1.75rem,2.4vw+0.75rem,2.5rem)] leading-[1.04] font-medium tracking-[-0.04em]"
                   initial={{ y: '105%' }}
@@ -287,7 +288,7 @@ export default function KeyPlan({ modes, extras, phone }: KeyPlanProps) {
                   transition={{ duration: 0.5, ease: easePremium }}
                 >
                   {mode.title}
-                </motion.span>
+                </m.span>
               </AnimatePresence>
             </h3>
             <p className="mt-4 text-pretty text-muted">{mode.text}</p>
@@ -308,3 +309,5 @@ export default function KeyPlan({ modes, extras, phone }: KeyPlanProps) {
     </MotionConfig>
   );
 }
+
+export default withLazyMotion(KeyPlan);

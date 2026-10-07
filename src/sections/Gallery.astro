@@ -103,7 +103,8 @@ const full = await Promise.all(
     </style>
   </noscript>
 
-  <!-- Viewer: native modal dialog (focus trap + Escape for free) -->
+  <!-- Viewer: native modal dialog (focus trap + Escape for free). Its image is lazy:
+       a closed dialog would otherwise download a full-size photo during first load. -->
   <dialog
     id="work-viewer"
     aria-label="Trabajo en grande"
@@ -116,6 +117,8 @@ const full = await Promise.all(
         alt={works[0].alt}
         width={full[0].attributes.width}
         height={full[0].attributes.height}
+        loading="lazy"
+        decoding="async"
         class="mx-auto max-h-[78svh] w-auto rounded-[1.25rem] object-contain"
       />
       <figcaption class="mt-4 flex items-center justify-between gap-4">

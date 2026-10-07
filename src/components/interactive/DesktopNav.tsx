@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { LayoutGroup, MotionConfig, motion } from 'motion/react';
+import { LayoutGroup, MotionConfig, m } from 'motion/react';
 import type { NavItem } from '../../data/navigation';
+import { withLazyMotion } from '../../utils/motion';
 
 interface DesktopNavProps {
   items: ReadonlyArray<NavItem>;
@@ -15,7 +16,7 @@ const pillSpring = { type: 'spring', stiffness: 520, damping: 40, mass: 0.7 } as
  *  – A small cobalt marker tracks the section currently in view (scroll spy).
  * Before hydration the server-rendered links work as plain anchors.
  */
-export default function DesktopNav({ items }: DesktopNavProps) {
+function DesktopNav({ items }: DesktopNavProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [active, setActive] = useState<string | null>(null);
 
@@ -48,7 +49,7 @@ export default function DesktopNav({ items }: DesktopNavProps) {
             return (
               <li key={item.href} className="relative">
                 {hovered === item.href && (
-                  <motion.span
+                  <m.span
                     layoutId="nav-pill"
                     className="absolute inset-0 rounded-full bg-ink/[0.055]"
                     transition={pillSpring}
@@ -81,3 +82,5 @@ export default function DesktopNav({ items }: DesktopNavProps) {
     </MotionConfig>
   );
 }
+
+export default withLazyMotion(DesktopNav, 'layout');

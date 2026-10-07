@@ -1,8 +1,9 @@
 import { useId, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import type { Emergency } from '../../data/emergencies';
 import { glyphs } from '../ui/glyphs';
 import { PhoneIcon, WhatsAppIcon } from '../ui/icons';
+import { withLazyMotion } from '../../utils/motion';
 
 interface EmergencyPickerProps {
   emergencies: ReadonlyArray<Pick<Emergency, 'id' | 'label' | 'glyph' | 'message'>>;
@@ -19,7 +20,7 @@ const waHref = (number: string, text: string) => `https://wa.me/${number}?text=$
  * Calling never depends on the selection. Options are native radios, so it is
  * keyboard- and screen-reader-friendly by default.
  */
-export default function EmergencyPicker({ emergencies, phone, whatsappNumber }: EmergencyPickerProps) {
+function EmergencyPicker({ emergencies, phone, whatsappNumber }: EmergencyPickerProps) {
   const name = useId();
   const [selected, setSelected] = useState<string | null>(null);
   const current = emergencies.find((e) => e.id === selected) ?? null;
@@ -101,7 +102,7 @@ export default function EmergencyPicker({ emergencies, phone, whatsappNumber }: 
             <span className="text-[0.9375rem] font-semibold tracking-[-0.01em]">Escribir por WhatsApp</span>
             <span className="relative block h-4 overflow-hidden font-mono text-label text-paper/80">
               <AnimatePresence initial={false} mode="popLayout">
-                <motion.span
+                <m.span
                   key={current?.id ?? 'none'}
                   className="block truncate"
                   initial={{ y: '100%', opacity: 0 }}
@@ -110,7 +111,7 @@ export default function EmergencyPicker({ emergencies, phone, whatsappNumber }: 
                   transition={{ duration: 0.4, ease: easePremium }}
                 >
                   {current ? `«${current.label}»` : 'Mensaje listo para enviar'}
-                </motion.span>
+                </m.span>
               </AnimatePresence>
             </span>
           </span>
@@ -122,3 +123,5 @@ export default function EmergencyPicker({ emergencies, phone, whatsappNumber }: 
     </div>
   );
 }
+
+export default withLazyMotion(EmergencyPicker);

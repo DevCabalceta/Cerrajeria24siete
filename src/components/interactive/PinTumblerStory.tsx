@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  motion,
+  m,
   useMotionValue,
   useMotionValueEvent,
   useReducedMotion,
@@ -9,6 +9,7 @@ import {
   type MotionValue,
 } from 'motion/react';
 import { ArrowUpRightIcon } from '../ui/icons';
+import { withLazyMotion } from '../../utils/motion';
 
 /* ─────────────────────────────────────────────────────────────
    Pin-tumbler geometry (SVG user units, viewBox -28 0 572 300)
@@ -78,7 +79,7 @@ function Pin({ index, keyX }: { index: number; keyX: MotionValue<number> }) {
   return (
     <g>
       <g transform={`translate(${PIN_X[index]} ${SPRING_TOP})`}>
-        <motion.path
+        <m.path
           d={SPRING_PATH}
           fill="none"
           className="stroke-ink/45"
@@ -87,7 +88,7 @@ function Pin({ index, keyX }: { index: number; keyX: MotionValue<number> }) {
           style={{ scaleY: springScale, originY: 0 }}
         />
       </g>
-      <motion.g style={{ y }}>
+      <m.g style={{ y }}>
         {/* Driver pin */}
         <rect x={PIN_X[index] - 9} y={keyTop - DRIVER} width="18" height={DRIVER} rx="3" className="fill-ink-soft" />
         {/* Key pin, with a pointed tip where it meets the key */}
@@ -96,7 +97,7 @@ function Pin({ index, keyX }: { index: number; keyX: MotionValue<number> }) {
           fill="url(#pt-steel)"
           className="stroke-ink/25"
         />
-      </motion.g>
+      </m.g>
     </g>
   );
 }
@@ -114,7 +115,7 @@ function RevealWord({
 }) {
   // Unrevealed tone keeps ≥3:1 contrast (large text) so the copy stays readable.
   const color = useTransform(progress, range, ['#7a7f88', accent ? '#1d4ed8' : '#0a0f1a']);
-  return <motion.span style={{ color }}>{word} </motion.span>;
+  return <m.span style={{ color }}>{word} </m.span>;
 }
 
 function RevealPoint({
@@ -137,13 +138,13 @@ function RevealPoint({
     <li className="flex items-start gap-3 border-t border-line py-3 sm:items-center [@media(max-height:44rem)]:py-2">
       <svg viewBox="0 0 12 18" className="mt-0.5 h-[18px] w-3 shrink-0 sm:mt-0" aria-hidden="true">
         <rect x="3" y="1" width="6" height="16" rx="1.5" className="fill-ink/[0.07]" />
-        <motion.rect x="4" y="7" width="4" height="9" rx="1" fill="url(#pt-steel)" className="stroke-ink/30" strokeWidth="0.5" style={{ y: pinY }} />
-        <motion.line x1="0" x2="12" y1="7" y2="7" className="stroke-cobalt" strokeWidth="1" style={{ opacity: shear }} />
+        <m.rect x="4" y="7" width="4" height="9" rx="1" fill="url(#pt-steel)" className="stroke-ink/30" strokeWidth="0.5" style={{ y: pinY }} />
+        <m.line x1="0" x2="12" y1="7" y2="7" className="stroke-cobalt" strokeWidth="1" style={{ opacity: shear }} />
       </svg>
       <span className="mt-px font-mono text-label text-muted sm:mt-0">P{index + 1}</span>
-      <motion.span style={{ color }} className="text-[0.8125rem] leading-snug tracking-[-0.01em] sm:text-[0.9375rem]">
+      <m.span style={{ color }} className="text-[0.8125rem] leading-snug tracking-[-0.01em] sm:text-[0.9375rem]">
         {text}
-      </motion.span>
+      </m.span>
     </li>
   );
 }
@@ -171,7 +172,7 @@ interface PinTumblerStoryProps {
  * then each credential aligns like a pin.
  * Without JS or with reduced motion, everything renders in its final state.
  */
-export default function PinTumblerStory({ titleId, eyebrow, statement, accentWords = [], points, cta }: PinTumblerStoryProps) {
+function PinTumblerStory({ titleId, eyebrow, statement, accentWords = [], points, cta }: PinTumblerStoryProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
@@ -237,7 +238,7 @@ export default function PinTumblerStory({ titleId, eyebrow, statement, accentWor
               ))}
 
               {/* Plug */}
-              <motion.rect x="72" y={SHEAR} width="376" height="88" rx="12" className="stroke-ink/15" style={{ fill: plugFill }} />
+              <m.rect x="72" y={SHEAR} width="376" height="88" rx="12" className="stroke-ink/15" style={{ fill: plugFill }} />
               {PIN_X.map((x) => (
                 <rect key={`pc-${x}`} x={x - 11} y={SHEAR} width="22" height={PIN_BASE - SHEAR} fill="#f1f1ee" />
               ))}
@@ -249,7 +250,7 @@ export default function PinTumblerStory({ titleId, eyebrow, statement, accentWor
               ))}
 
               {/* Shear line */}
-              <motion.line
+              <m.line
                 x1="60"
                 x2="464"
                 y1={SHEAR}
@@ -265,7 +266,7 @@ export default function PinTumblerStory({ titleId, eyebrow, statement, accentWor
               </text>
 
               {/* Key */}
-              <motion.g style={{ x: keyX }}>
+              <m.g style={{ x: keyX }}>
                 <path
                   fillRule="evenodd"
                   d="M-16 210a30 30 0 1 0 60 0a30 30 0 1 0 -60 0Z M5 210a9 9 0 1 0 18 0a9 9 0 1 0 -18 0Z"
@@ -275,7 +276,7 @@ export default function PinTumblerStory({ titleId, eyebrow, statement, accentWor
                 <rect x="40" y="198" width="20" height="24" rx="3" fill="url(#pt-steel)" className="stroke-ink/25" />
                 <path d={KEY_PATH} fill="url(#pt-steel)" className="stroke-ink/30" strokeLinejoin="round" />
                 <path d="M70 213H424" className="stroke-ink/15" strokeWidth="1.5" />
-              </motion.g>
+              </m.g>
 
               {/* Housing face the key slides behind */}
               <rect x="52" y="186" width="14" height="46" rx="3" className="fill-ink" />
@@ -285,10 +286,10 @@ export default function PinTumblerStory({ titleId, eyebrow, statement, accentWor
               <span className="flex items-center gap-3">
                 <svg viewBox="0 0 40 40" className="size-9" aria-hidden="true">
                   <circle cx="20" cy="20" r="18" fill="#ecebe6" className="stroke-ink/15" />
-                  <motion.g style={{ rotate: turn, originX: '20px', originY: '20px' }}>
+                  <m.g style={{ rotate: turn, originX: '20px', originY: '20px' }}>
                     <circle cx="20" cy="20" r="11" className="fill-white stroke-ink/20" />
                     <rect x="18.5" y="11" width="3" height="18" rx="1.5" className="fill-ink" />
-                  </motion.g>
+                  </m.g>
                 </svg>
                 <span>
                   Estado ·{' '}
@@ -333,15 +334,17 @@ export default function PinTumblerStory({ titleId, eyebrow, statement, accentWor
               ))}
             </ul>
 
-            <motion.div style={{ opacity: outroOpacity, y: outroY }} className="mt-5 lg:mt-8">
+            <m.div style={{ opacity: outroOpacity, y: outroY }} className="mt-5 lg:mt-8">
               <a href={cta.href} className="group/cta inline-flex items-center gap-2 text-sm font-medium text-ink">
                 <span className="link-underline pb-0.5">{cta.label}</span>
                 <ArrowUpRightIcon className="size-3.5 transition-transform duration-500 ease-spring group-hover/cta:rotate-45" />
               </a>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default withLazyMotion(PinTumblerStory);

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'motion/react';
+import { m, useInView } from 'motion/react';
+import { withLazyMotion } from '../../utils/motion';
 
 const ZONE = 'America/Costa_Rica';
 const C = 200;
@@ -34,7 +35,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
  * and a digital readout of the current time in Costa Rica. The time is only
  * known on the client, so the server renders the ring without a hand.
  */
-export default function EmergencyClock() {
+function EmergencyClock() {
   const ref = useRef<SVGSVGElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
   const [time, setTime] = useState<{ h: number; m: number; s: number } | null>(null);
@@ -61,7 +62,7 @@ export default function EmergencyClock() {
         {SEGMENTS.map((h) => {
           const current = time?.h === h;
           return (
-            <motion.path
+            <m.path
               key={h}
               d={segment(h)}
               fill="none"
@@ -133,3 +134,5 @@ export default function EmergencyClock() {
     </figure>
   );
 }
+
+export default withLazyMotion(EmergencyClock);

@@ -38,7 +38,8 @@ import { contactLinks, telHref, whatsappHref } from '../../utils/contact';
     </div>
 
     <nav aria-label="Principal" class="hidden lg:block">
-      <DesktopNav client:idle items={primaryNav} />
+      <!-- Hydrated only where it is shown (lg+); below that the plain links never render. -->
+      <DesktopNav client:media="(min-width: 64rem)" items={primaryNav} />
     </nav>
 
     <div class="flex items-center gap-2 justify-self-end sm:gap-3">

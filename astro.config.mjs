@@ -10,6 +10,12 @@ export default defineConfig({
   site: 'https://cerrajeria24siete.com',
   trailingSlash: 'ignore',
 
+  // One-page site: inlining the CSS (~15 KB gzipped) saves a render-blocking
+  // round trip on first paint, and there is no second page to reuse a cached file.
+  build: {
+    inlineStylesheets: 'always',
+  },
+
   integrations: [react(), sitemap()],
 
   // Self-hosted at build time by the Astro Fonts API (no runtime request to Google).

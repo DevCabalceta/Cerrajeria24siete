@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { useReducedMotion } from 'motion/react';
 import LockStatus, { type LockStatusHandle } from './LockStatus';
+import { withLazyMotion } from '../../utils/motion';
 
 /* ─────────────────────────────────────────────────────────────
    Keyring geometry (SVG user units)
@@ -17,6 +18,8 @@ const MAX_SPIN = 6; // rad/s clamp
 const SWING_LIMIT = 1.0; // rad from rest before a soft stop kicks in
 const PUSH = 0.45; // how much of the pointer's speed transfers to a key
 const GRAB_K = 140;
+const JINGLE_SETTLE = 2.4; // extra damping while the entrance jingle plays out
+const CALM = 0.012; // below this the motion is sub-pixel, so the loop can stop
 
 type ItemId = 'remote' | 'safe' | 'car' | 'tag' | 'house';
 
@@ -169,7 +172,7 @@ function Shape({ id, paint, ledRef }: { id: ItemId; paint: Paint; ledRef: RefObj
  * house key, car key, gate remote, safe key and a 24/7 tag.
  * Touching the house key "opens" the lock readout.
  */
-export default function KeyStage() {
+function KeyStage() {
   const uid = useId().replace(/:/g, '');
   const paint: Paint = { steel: `url(#steel-${uid})`, steelDark: `url(#steel-dark-${uid})`, fob: `url(#fob-${uid})` };
 
@@ -198,13 +201,20 @@ export default function KeyStage() {
     calm: 0,
     ledTimer: 0,
     lastUnlock: 0,
+    settle: 1,
+    readout: '',
   });
 
   const render = useCallback(() => {
     const s = sim.current;
     ringRef.current?.setAttribute('transform', ringTransform(s.alpha));
     itemRefs.current.forEach((el, i) => el?.setAttribute('transform', itemTransform(i, s.theta[i], s.alpha)));
-    if (readoutRef.current) readoutRef.current.textContent = formatAngle(s.theta[HOUSE] - restAngle[HOUSE]);
+    // Only touch the text when the shown value changes (it would otherwise re-layout every frame).
+    const readout = formatAngle(s.theta[HOUSE] - restAngle[HOUSE]);
+    if (readout !== s.readout && readoutRef.current) {
+      s.readout = readout;
+      readoutRef.current.textContent = readout;
+    }
   }, []);
 
   /** Integrates one frame; returns false once everything has settled. */
@@ -217,12 +227,12 @@ export default function KeyStage() {
       const sub = 2;
       const h = dt / sub;
       for (let k = 0; k < sub; k++) {
-        let alphaAcc = -(G / RING_LEN) * Math.sin(s.alpha) - RING_DAMP * s.alphaV;
+        let alphaAcc = -(G / RING_LEN) * Math.sin(s.alpha) - RING_DAMP * s.settle * s.alphaV;
 
         const thetaAcc = ITEMS.map((item, i) => {
           const rest = restAngle[i] + s.alpha * 0.5;
           const dev = s.theta[i] - rest;
-          let acc = -(G / item.com) * Math.sin(dev) - ITEM_DAMP * s.omega[i];
+          let acc = -(G / item.com) * Math.sin(dev) - ITEM_DAMP * s.settle * s.omega[i];
           // Soft stop: keys on a ring rarely swing past ~60°.
           if (Math.abs(dev) > SWING_LIMIT) acc -= Math.sign(dev) * (Math.abs(dev) - SWING_LIMIT) * 420 + s.omega[i] * 4;
           if (s.grabbed === i) {
@@ -248,9 +258,11 @@ export default function KeyStage() {
 
       const energy =
         Math.abs(s.alphaV) + Math.abs(s.alpha) + s.omega.reduce((a, w, i) => a + Math.abs(w) + Math.abs(s.theta[i] - restAngle[i] - s.alpha * 0.5), 0);
-      s.calm = energy < 0.004 ? s.calm + 1 : 0;
+      s.calm = energy < CALM ? s.calm + 1 : 0;
 
-      return !(s.calm > 20 && s.grabbed < 0);
+      const done = s.calm > 12 && s.grabbed < 0;
+      if (done) s.settle = 1;
+      return !done;
     },
     [render],
   );
@@ -322,6 +334,7 @@ export default function KeyStage() {
   };
 
   const touched = (i: number) => {
+    sim.current.settle = 1; // the visitor is playing: full, lively swing
     if (!interacted) setInteracted(true);
     if (i === REMOTE) flashLed();
     if (i === HOUSE) signalUnlock();
@@ -376,7 +389,10 @@ export default function KeyStage() {
       kicked = true;
     }
 
-    if (kicked) start();
+    if (kicked) {
+      s.settle = 1;
+      start();
+    }
   };
 
   const onPointerDown = (event: React.PointerEvent<SVGSVGElement>) => {
@@ -411,23 +427,31 @@ export default function KeyStage() {
   };
 
   // Entrance: a short jingle, as if the keys were just hung. It waits for the
-  // page to finish loading so the simulation never competes with first paint.
+  // page to load and the main thread to go idle so it never competes with first
+  // paint, and it is damped harder than a real swing so it settles in ~1.5s.
   useEffect(() => {
     if (reduceMotion) return;
     const s = sim.current;
     let timer = 0;
+    let idle = 0;
+    const play = () => {
+      if (s.running || s.grabbed >= 0) return; // the visitor got there first
+      s.settle = JINGLE_SETTLE;
+      s.alphaV = 0.7;
+      s.omega = ITEMS.map((_, i) => (i % 2 ? -1 : 1) * (0.55 + i * 0.12));
+      start();
+    };
     const jingle = () => {
-      timer = window.setTimeout(() => {
-        s.alphaV = 0.9;
-        s.omega = ITEMS.map((_, i) => (i % 2 ? -1 : 1) * (0.7 + i * 0.15));
-        start();
-      }, 350);
+      // Not in older Safari, hence the timeout fallback.
+      if (typeof window.requestIdleCallback === 'function') idle = window.requestIdleCallback(play, { timeout: 1200 });
+      else timer = window.setTimeout(play, 350);
     };
     if (document.readyState === 'complete') jingle();
     else window.addEventListener('load', jingle, { once: true });
     return () => {
       window.removeEventListener('load', jingle);
       window.clearTimeout(timer);
+      if (idle) window.cancelIdleCallback(idle);
     };
   }, [reduceMotion, start]);
 
@@ -450,7 +474,8 @@ export default function KeyStage() {
   }, []);
 
   return (
-    <div className="relative size-full">
+    // Layout containment: per-frame updates inside the stage never re-layout the page.
+    <div className="relative size-full [contain:layout]">
       {/* Technical-drawing backdrop */}
       <div
         aria-hidden="true"
@@ -550,3 +575,5 @@ export default function KeyStage() {
     </div>
   );
 }
+
+export default withLazyMotion(KeyStage);

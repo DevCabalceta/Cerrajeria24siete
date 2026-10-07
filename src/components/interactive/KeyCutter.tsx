@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AnimatePresence,
   animate,
-  motion,
+  m,
   useInView,
   useMotionValue,
   useReducedMotion,
@@ -11,6 +11,7 @@ import {
 } from 'motion/react';
 import type { Reason } from '../../data/reasons';
 import { useHydrated } from '../../utils/useHydrated';
+import { withLazyMotion } from '../../utils/motion';
 
 interface KeyCutterProps {
   reasons: ReadonlyArray<Reason>;
@@ -49,7 +50,7 @@ const SPARKS = [-150, -125, -100, -70, -45, -20];
  * tooth per reason — each reason lights up as its tooth is cut — until the
  * key is ready. Afterwards, hovering a reason brings the cutter to its tooth.
  */
-export default function KeyCutter({ reasons }: KeyCutterProps) {
+function KeyCutter({ reasons }: KeyCutterProps) {
   const reduce = useReducedMotion();
   // Server render, no-JS and reduced motion all show the finished key.
   const animated = useHydrated() && !reduce;
@@ -166,7 +167,7 @@ export default function KeyCutter({ reasons }: KeyCutterProps) {
           {/* Key */}
           <path fillRule="evenodd" d="M34 173a38 38 0 1 0 76 0a38 38 0 1 0 -76 0Z M60 173a12 12 0 1 0 24 0a12 12 0 1 0 -24 0Z" fill="url(#kc-steel)" className="stroke-ink/30" />
           <rect x="108" y="160" width="44" height="28" rx="4" fill="url(#kc-steel)" className="stroke-ink/30" />
-          <motion.path d={blade} fill="url(#kc-steel)" className="stroke-ink/40" strokeLinejoin="round" />
+          <m.path d={blade} fill="url(#kc-steel)" className="stroke-ink/40" strokeLinejoin="round" />
           <path d={`M${BLADE_START + 10} 182H530`} className="stroke-ink/15" strokeWidth="2" />
 
           {/* Vise jaws */}
@@ -175,9 +176,9 @@ export default function KeyCutter({ reasons }: KeyCutterProps) {
           <circle cx="134" cy="136" r="4" className="fill-paper/30" />
 
           {/* Cutter carriage + wheel */}
-          <motion.line x1={cutterX} x2={cutterX} y1="0" y2={wheelY} className="stroke-ink" strokeWidth="10" strokeLinecap="round" />
-          <motion.g style={{ x: cutterX, y: wheelY }}>
-            <motion.g style={{ rotate: spin }}>
+          <m.line x1={cutterX} x2={cutterX} y1="0" y2={wheelY} className="stroke-ink" strokeWidth="10" strokeLinecap="round" />
+          <m.g style={{ x: cutterX, y: wheelY }}>
+            <m.g style={{ rotate: spin }}>
               <circle cx="0" cy="0" r={R} className="fill-ink-soft" />
               {WHEEL_TEETH.map((a) => (
                 <line
@@ -192,17 +193,17 @@ export default function KeyCutter({ reasons }: KeyCutterProps) {
               ))}
               <circle cx="0" cy="0" r="9" className="fill-paper" />
               <circle cx="0" cy="0" r="3" className="fill-ink" />
-            </motion.g>
-          </motion.g>
+            </m.g>
+          </m.g>
 
           {/* Sparks at the contact point */}
           <AnimatePresence>
             {cutting && (
-              <motion.g key="sparks" style={{ x: cutterX, y: contactY }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <m.g key="sparks" style={{ x: cutterX, y: contactY }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 {SPARKS.map((deg, i) => {
                   const a = (deg * Math.PI) / 180;
                   return (
-                    <motion.line
+                    <m.line
                       key={deg}
                       x1="0"
                       y1="0"
@@ -217,7 +218,7 @@ export default function KeyCutter({ reasons }: KeyCutterProps) {
                     />
                   );
                 })}
-              </motion.g>
+              </m.g>
             )}
           </AnimatePresence>
         </svg>
@@ -253,3 +254,5 @@ export default function KeyCutter({ reasons }: KeyCutterProps) {
     </div>
   );
 }
+
+export default withLazyMotion(KeyCutter);

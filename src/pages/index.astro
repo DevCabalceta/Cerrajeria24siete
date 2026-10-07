@@ -17,8 +17,10 @@ import Residential from '../sections/Residential.astro';
 import Services from '../sections/Services.astro';
 import WhyUs from '../sections/WhyUs.astro';
 
-const title = `${business.name} — Cerrajeros 24/7 en Costa Rica`;
-const description = `Cerrajería en general y portones eléctricos a domicilio, ${business.availability.long}. ${business.coverage.areas.join(', ')}, ${business.coverage.summary.toLowerCase()}. Llame al ${business.phone.display}.`;
+// Search-first title (what people type: "cerrajero 24 horas") and a ~155-character
+// description, the length Google and WhatsApp show before truncating.
+const title = `Cerrajero 24 horas en ${business.country} | ${business.name}`;
+const description = `Cerrajero a domicilio 24 horas en ${business.coverage.areas.slice(0, -1).join(', ')} y ${business.coverage.areas.at(-1)}: apertura de casas y carros, llaves con chip, cajas fuertes y portones. Llame al ${business.phone.short}.`;
 ---
 
 <BaseLayout title={title} description={description}>

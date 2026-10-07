@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   MotionConfig,
-  motion,
+  m,
   useInView,
   useMotionValueEvent,
   useReducedMotion,
@@ -10,6 +10,7 @@ import {
   type MotionValue,
 } from 'motion/react';
 import type { Motor, MotorId } from '../../data/gates';
+import { withLazyMotion } from '../../utils/motion';
 
 interface GateStageProps {
   motors: ReadonlyArray<Motor>;
@@ -50,7 +51,7 @@ function Bars({ from, to }: { from: number; to: number }) {
 
 function Gear({ rotate, teeth = 10, chain = false }: { rotate: MotionValue<number>; teeth?: number; chain?: boolean }) {
   return (
-    <motion.g style={{ rotate }}>
+    <m.g style={{ rotate }}>
       <circle cx={PINION.x} cy={PINION.y} r={PINION.r} className="fill-ink stroke-cobalt-bright" strokeWidth="2" />
       {Array.from({ length: teeth }, (_, i) => {
         const a = (i / teeth) * Math.PI * 2;
@@ -70,7 +71,7 @@ function Gear({ rotate, teeth = 10, chain = false }: { rotate: MotionValue<numbe
         );
       })}
       <circle cx={PINION.x} cy={PINION.y} r="2.5" className="fill-cobalt-bright" />
-    </motion.g>
+    </m.g>
   );
 }
 
@@ -79,7 +80,7 @@ function SlidingGate({ pos, chain }: { pos: MotionValue<number>; chain: boolean 
   const gearRotate = useTransform(x, (v) => (v / PINION.r) * (180 / Math.PI));
   return (
     <>
-      <motion.g style={{ x }}>
+      <m.g style={{ x }}>
         <Bars from={OPEN_L} to={OPEN_R} />
         {chain ? (
           <line x1={OPEN_L} x2={OPEN_R} y1="291" y2="291" className="stroke-cobalt-bright" strokeWidth="3" strokeDasharray="4 2" />
@@ -91,7 +92,7 @@ function SlidingGate({ pos, chain }: { pos: MotionValue<number>; chain: boolean 
         {[OPEN_L + 40, OPEN_R - 40].map((cx) => (
           <circle key={cx} cx={cx} cy={GROUND - 6} r="6" className="fill-ink stroke-paper/70" strokeWidth="2" />
         ))}
-      </motion.g>
+      </m.g>
       {/* Motor, in front of the gate */}
       <rect x="292" y="306" width="60" height="14" rx="3" className="fill-ink-soft stroke-paper/40" />
       <Gear rotate={gearRotate} chain={chain} teeth={chain ? 12 : 10} />
@@ -105,17 +106,17 @@ function SwingGate({ pos }: { pos: MotionValue<number> }) {
   const rightArm = useTransform(scaleX, (s) => OPEN_R - LEAF * 0.55 * s);
   return (
     <>
-      <motion.g style={{ scaleX, originX: 0 }}>
+      <m.g style={{ scaleX, originX: 0 }}>
         <Bars from={OPEN_L} to={OPEN_L + LEAF - 2} />
-      </motion.g>
-      <motion.g style={{ scaleX, originX: 1 }}>
+      </m.g>
+      <m.g style={{ scaleX, originX: 1 }}>
         <Bars from={OPEN_L + LEAF + 2} to={OPEN_R} />
-      </motion.g>
+      </m.g>
       {/* Pistons: fixed cylinder on the post, rod reaching the leaf */}
       <rect x="296" y="232" width="56" height="10" rx="5" className="fill-ink-soft stroke-cobalt-bright" strokeWidth="1.5" />
-      <motion.line x1="350" y1="237" x2={leftArm} y2="237" className="stroke-cobalt-bright" strokeWidth="3" strokeLinecap="round" />
+      <m.line x1="350" y1="237" x2={leftArm} y2="237" className="stroke-cobalt-bright" strokeWidth="3" strokeLinecap="round" />
       <rect x="908" y="232" width="56" height="10" rx="5" className="fill-ink-soft stroke-cobalt-bright" strokeWidth="1.5" />
-      <motion.line x1="910" y1="237" x2={rightArm} y2="237" className="stroke-cobalt-bright" strokeWidth="3" strokeLinecap="round" />
+      <m.line x1="910" y1="237" x2={rightArm} y2="237" className="stroke-cobalt-bright" strokeWidth="3" strokeLinecap="round" />
     </>
   );
 }
@@ -132,7 +133,7 @@ type Phase = 'Cerrado' | 'Abriendo' | 'Abierto' | 'Cerrando';
  * (rack and pinion, chain, or pistons on a swing gate) with the real mechanism
  * moving in sync.
  */
-export default function GateStage({ motors }: GateStageProps) {
+function GateStage({ motors }: GateStageProps) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.5 });
@@ -185,7 +186,7 @@ export default function GateStage({ motors }: GateStageProps) {
     window.setTimeout(() => setTarget(1), 300);
   };
 
-  const current = motors.find((m) => m.id === motor) ?? motors[0];
+  const current = motors.find((option) => option.id === motor) ?? motors[0];
 
   return (
     <MotionConfig reducedMotion="user">
@@ -195,25 +196,25 @@ export default function GateStage({ motors }: GateStageProps) {
           <div>
             <p className="font-mono text-label text-paper/60 uppercase">Tipo de motor</p>
             <div role="group" aria-label="Tipo de motor" className="mt-3 inline-flex rounded-full p-1 ring-1 ring-paper/15 ring-inset">
-              {motors.map((m) => {
-                const on = m.id === motor;
+              {motors.map((option) => {
+                const on = option.id === motor;
                 return (
                   <button
-                    key={m.id}
+                    key={option.id}
                     type="button"
                     aria-pressed={on}
-                    onClick={() => chooseMotor(m.id)}
+                    onClick={() => chooseMotor(option.id)}
                     className={`relative h-9 rounded-full px-4 text-[0.8125rem] tracking-[-0.01em] transition-colors duration-300 ${on ? 'text-ink' : 'text-paper/75 hover:text-paper'}`}
                   >
                     {on && (
-                      <motion.span
+                      <m.span
                         layoutId="motor-pill"
                         className="absolute inset-0 rounded-full bg-paper"
                         transition={{ type: 'spring', stiffness: 480, damping: 38 }}
                         aria-hidden="true"
                       />
                     )}
-                    <span className="relative">{m.label}</span>
+                    <span className="relative">{option.label}</span>
                   </button>
                 );
               })}
@@ -234,7 +235,7 @@ export default function GateStage({ motors }: GateStageProps) {
           </div>
             {/* Remote: the "controles" service, in miniature */}
             <div className="flex items-center gap-1.5 rounded-full bg-[#1b2232] p-1.5 ring-1 ring-paper/15">
-              <motion.span
+              <m.span
                 key={led}
                 aria-hidden="true"
                 className="mx-1.5 size-1.5 rounded-full bg-cobalt-bright"
@@ -314,3 +315,5 @@ export default function GateStage({ motors }: GateStageProps) {
     </MotionConfig>
   );
 }
+
+export default withLazyMotion(GateStage, 'layout');

@@ -36,6 +36,12 @@ export default defineConfig(
     languageOptions: { globals: globals.node },
   },
 
+  // Build scripts run in Node and drive headless Chrome (page.evaluate runs in the browser).
+  {
+    files: ['scripts/**/*.{js,mjs}'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
+
   {
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { AnimatePresence, MotionConfig, motion } from 'motion/react';
+import { AnimatePresence, MotionConfig, m } from 'motion/react';
 import type { CoverageTier } from '../../data/coverage';
 import { MAP_HEIGHT, MAP_WIDTH, capitals, type ProvinceShape } from '../../data/costa-rica-map';
 import Button from '../ui/Button';
+import { withLazyMotion } from '../../utils/motion';
 
 export interface CoverageProvince extends ProvinceShape {
   tier: CoverageTier;
@@ -34,13 +35,13 @@ const PIN_IDS = ['san-jose', 'heredia', 'alajuela'] as const;
 
 /**
  * Coverage map of Costa Rica (real province shapes). A signal pulses out from
- * the Gran Área Metropolitana across the whole country; hovering or choosing
- * a province shows its coverage and a WhatsApp link that names the province.
+ * the Gran Área Metropolitana across the whole country; pressing a province
+ * (on the map or in the picker) shows its coverage and a WhatsApp link that
+ * names the province. Hover only highlights — it never changes the selection.
  */
-export default function CoverageMap({ provinces, tiers, phone }: CoverageMapProps) {
+function CoverageMap({ provinces, tiers, phone }: CoverageMapProps) {
   const [active, setActive] = useState(provinces[0].id);
-  const [hover, setHover] = useState<string | null>(null);
-  const shown = provinces.find((p) => p.id === (hover ?? active)) ?? provinces[0];
+  const shown = provinces.find((p) => p.id === active) ?? provinces[0];
   const [ox, oy] = capitals['san-jose'];
 
   return (
@@ -58,7 +59,6 @@ export default function CoverageMap({ provinces, tiers, phone }: CoverageMapProp
             className="mt-4 w-full"
             role="img"
             aria-label="Mapa de Costa Rica con las siete provincias. Heredia, San José y Alajuela son zonas principales; Cartago, Gran Área Metropolitana; el resto, todo el territorio nacional."
-            onPointerLeave={() => setHover(null)}
           >
             <defs>
               <clipPath id="cr-clip">
@@ -74,10 +74,9 @@ export default function CoverageMap({ provinces, tiers, phone }: CoverageMapProp
                 <path
                   key={p.id}
                   d={p.d}
-                  onPointerEnter={(event) => event.pointerType === 'mouse' && setHover(p.id)}
-                  onPointerDown={() => setActive(p.id)}
+                  onClick={() => setActive(p.id)}
                   className={`cursor-pointer stroke-ink transition-[fill,opacity] duration-300 ease-premium ${tierFill[p.tier]} ${
-                    on ? 'opacity-100' : shown.tier === p.tier ? 'opacity-90' : 'opacity-70'
+                    on ? 'opacity-100' : shown.tier === p.tier ? 'opacity-90 hover:opacity-100' : 'opacity-70 hover:opacity-100'
                   }`}
                   strokeWidth="1.5"
                   strokeLinejoin="round"
@@ -88,7 +87,7 @@ export default function CoverageMap({ provinces, tiers, phone }: CoverageMapProp
             {/* Signal from the GAM, sweeping the whole country */}
             <g clipPath="url(#cr-clip)" className="pointer-events-none">
               {[0, 1, 2].map((i) => (
-                <motion.circle
+                <m.circle
                   key={i}
                   cx={ox}
                   cy={oy}
@@ -149,8 +148,6 @@ export default function CoverageMap({ provinces, tiers, phone }: CoverageMapProp
                   type="button"
                   aria-pressed={on}
                   onClick={() => setActive(p.id)}
-                  onPointerEnter={(event) => event.pointerType === 'mouse' && setHover(p.id)}
-                  onPointerLeave={() => setHover(null)}
                   className={`inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm tracking-[-0.01em] transition-colors duration-300 ease-premium ${
                     on ? 'bg-paper text-ink' : 'text-paper/80 ring-1 ring-paper/20 ring-inset hover:bg-paper/[0.07] hover:text-paper'
                   }`}
@@ -166,7 +163,7 @@ export default function CoverageMap({ provinces, tiers, phone }: CoverageMapProp
             <p className="font-mono text-label text-paper/60 uppercase">{tiers[shown.tier].label}</p>
             <h3 className="relative mt-3 overflow-hidden pb-[0.08em]">
               <AnimatePresence mode="popLayout" initial={false}>
-                <motion.span
+                <m.span
                   key={shown.id}
                   className="block text-[clamp(2rem,3vw+0.75rem,3rem)] leading-[1] font-medium tracking-[-0.04em]"
                   initial={{ y: '105%' }}
@@ -175,7 +172,7 @@ export default function CoverageMap({ provinces, tiers, phone }: CoverageMapProp
                   transition={{ duration: 0.45, ease: easePremium }}
                 >
                   {shown.name}
-                </motion.span>
+                </m.span>
               </AnimatePresence>
             </h3>
             <p className="mt-3 text-pretty text-paper/75">{tiers[shown.tier].detail}</p>
@@ -194,3 +191,5 @@ export default function CoverageMap({ provinces, tiers, phone }: CoverageMapProp
     </MotionConfig>
   );
 }
+
+export default withLazyMotion(CoverageMap);

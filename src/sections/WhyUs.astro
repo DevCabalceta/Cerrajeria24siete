@@ -27,7 +27,8 @@ import { telHref, whatsappHref } from '../utils/contact';
     </header>
 
     <div class="mt-14 lg:mt-20">
-      <KeyCutter client:idle reasons={reasons} />
+      <!-- Hydrates well before it scrolls in: SSR shows the finished key, hydration resets it to blank. -->
+      <KeyCutter client:visible={{ rootMargin: '1000px' }} reasons={reasons} />
     </div>
 
     <div class="mt-14 flex flex-col gap-4 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between lg:mt-20">

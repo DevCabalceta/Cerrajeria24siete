@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
-import { AnimatePresence, MotionConfig, motion, useReducedMotion, type Variants } from 'motion/react';
+import { AnimatePresence, MotionConfig, m, useReducedMotion, type Variants } from 'motion/react';
 import type { NavItem } from '../../data/navigation';
 import type { ContactLinks } from '../../utils/contact';
 import Button from '../ui/Button';
 import LiveStatus from '../ui/LiveStatus';
 import Logo from '../ui/Logo';
 import { ArrowUpRightIcon } from '../ui/icons';
+import { withLazyMotion } from '../../utils/motion';
 
 interface MobileMenuProps {
   items: ReadonlyArray<NavItem>;
@@ -32,7 +33,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
  * Accessibility: aria-expanded/controls, focus moved in and trapped, Escape,
  * background made inert, body scroll locked, focus restored on close.
  */
-export default function MobileMenu({ items, contact }: MobileMenuProps) {
+function MobileMenu({ items, contact }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
   const [origin, setOrigin] = useState<Origin>({ x: 0, y: 0, r: 0 });
   const toggleRef = useRef<HTMLButtonElement>(null);
@@ -199,14 +200,14 @@ export default function MobileMenu({ items, contact }: MobileMenuProps) {
             open ? 'ring-paper/20' : 'ring-ink/15 group-hover/toggle:bg-ink/[0.04]'
           }`}
         >
-          <motion.span
+          <m.span
             className="absolute h-[1.5px] w-[18px] rounded-full bg-current"
             initial={false}
             animate={open ? { y: 0, rotate: 45 } : { y: -3.5, rotate: 0 }}
             transition={{ type: 'spring', stiffness: 420, damping: 30 }}
           />
           {/* Outer span rotates around the centre; inner span shortens from the right edge. */}
-          <motion.span
+          <m.span
             className="absolute flex h-[1.5px] w-[18px] justify-end"
             initial={false}
             animate={open ? { y: 0, rotate: -45 } : { y: 3.5, rotate: 0 }}
@@ -217,13 +218,13 @@ export default function MobileMenu({ items, contact }: MobileMenuProps) {
                 open ? 'w-full' : 'w-2/3 group-hover/toggle:w-full'
               }`}
             />
-          </motion.span>
+          </m.span>
         </span>
       </button>
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             key="mobile-menu"
             ref={panelRef}
             id={PANEL_ID}
@@ -245,21 +246,21 @@ export default function MobileMenu({ items, contact }: MobileMenuProps) {
             </div>
 
             <nav aria-label="Menú móvil" className="container-x flex flex-1 flex-col pt-5 pb-[max(2rem,env(safe-area-inset-bottom))]">
-              <motion.div variants={fadeUp} className="flex items-center justify-between">
+              <m.div variants={fadeUp} className="flex items-center justify-between">
                 <span className="font-mono text-label text-paper/45 uppercase">Menú</span>
                 <LiveStatus label={contact.availability} tone="paper" />
-              </motion.div>
+              </m.div>
 
-              <motion.ul variants={listVariants} className="group/list mt-5">
+              <m.ul variants={listVariants} className="group/list mt-5">
                 {items.map((item, index) => (
                   <li key={item.href} className="relative">
-                    <motion.span
+                    <m.span
                       aria-hidden="true"
                       variants={lineVariants}
                       className="absolute inset-x-0 top-0 h-px origin-left bg-paper/12"
                     />
                     <div className="overflow-hidden">
-                      <motion.a
+                      <m.a
                         ref={index === 0 ? firstLinkRef : undefined}
                         href={item.href}
                         onClick={(event) => onNavigate(event, item.href)}
@@ -273,13 +274,13 @@ export default function MobileMenu({ items, contact }: MobileMenuProps) {
                           {item.label}
                         </span>
                         <ArrowUpRightIcon className="ml-auto size-5 shrink-0 -translate-x-2 translate-y-2 text-paper/60 opacity-0 transition-[opacity,translate] duration-500 ease-premium group-hover/link:translate-0 group-hover/link:opacity-100" />
-                      </motion.a>
+                      </m.a>
                     </div>
                   </li>
                 ))}
-              </motion.ul>
+              </m.ul>
 
-              <motion.div variants={fadeUp} className="mt-auto pt-10 [@media(max-height:44rem)]:pt-6">
+              <m.div variants={fadeUp} className="mt-auto pt-10 [@media(max-height:44rem)]:pt-6">
                 <div className="grid grid-cols-2 gap-3">
                   <Button href={contact.tel} variant="inverse" size="lg" icon="phone">
                     Llamar
@@ -321,11 +322,13 @@ export default function MobileMenu({ items, contact }: MobileMenuProps) {
                     <dd className="mt-1.5 text-pretty text-paper/75">{contact.coverage}</dd>
                   </div>
                 </dl>
-              </motion.div>
+              </m.div>
             </nav>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </MotionConfig>
   );
 }
+
+export default withLazyMotion(MobileMenu);

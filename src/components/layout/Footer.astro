@@ -12,7 +12,7 @@ const brand = [...'Cerrajería'].map((char) => ({ char, muted: false })).concat(
 ---
 
 <footer data-menu-inert class="relative overflow-hidden bg-ink text-paper">
-  <div class="container-x pb-[calc(9rem+env(safe-area-inset-bottom))]">
+  <div class="container-x pb-[calc(2rem+env(safe-area-inset-bottom))] sm:pb-10">
     <div class="grid gap-x-10 gap-y-12 border-t border-paper/15 pt-16 sm:grid-cols-2 sm:pt-20 lg:grid-cols-12">
       <!-- Brand -->
       <div class="sm:col-span-2 lg:col-span-4">
@@ -119,7 +119,9 @@ const brand = [...'Cerrajería'].map((char) => ({ char, muted: false })).concat(
       </div>
     </div>
 
-    <div class="mt-8 grid gap-4 border-t border-paper/15 pt-6 font-mono text-label text-paper/60 uppercase sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+    <!-- data-fab-end: the floating buttons step aside once this row is on screen
+         (it repeats both of their actions), so no extra padding is reserved. -->
+    <div data-fab-end class="mt-8 grid gap-4 border-t border-paper/15 pt-6 font-mono text-label text-paper/60 uppercase sm:grid-cols-[1fr_auto_1fr] sm:items-center">
       <p>© {year} {business.name} · {business.country}</p>
       <a
         href="https://devcabalceta.vercel.app/es"

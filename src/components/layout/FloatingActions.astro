@@ -5,7 +5,8 @@ import { whatsappHref } from '../../utils/contact';
 
 <!--
   Floating actions (bottom-right): WhatsApp + back-to-top with a reading-progress
-  ring. They appear once the hero is behind and stay visible to the very end.
+  ring. They appear once the hero is behind and step aside when the footer's
+  last row (which repeats both actions) comes on screen.
 -->
 <div
   id="floating-actions"
@@ -14,12 +15,13 @@ import { whatsappHref } from '../../utils/contact';
   data-show-top="false"
   class="group/fab pointer-events-none fixed right-[max(1rem,env(safe-area-inset-right))] bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6"
 >
-  <!-- Back to top -->
+  <!-- Back to top (mr-1.5 centres the 44px button over the 56px WhatsApp icon,
+       which stays anchored right even while its label expands on hover) -->
   <a
     href="#inicio"
     data-to-top
     aria-label="Volver arriba"
-    class="group/top pointer-events-auto relative grid size-11 translate-y-3 scale-90 place-items-center rounded-full bg-paper/90 text-ink opacity-0 shadow-[0_10px_30px_-12px_rgb(10_15_26/0.45)] ring-1 ring-ink/10 backdrop-blur-md transition-[opacity,translate,scale,visibility] duration-500 ease-spring invisible group-data-[show-top=true]/fab:visible group-data-[show-top=true]/fab:translate-y-0 group-data-[show-top=true]/fab:scale-100 group-data-[show-top=true]/fab:opacity-100 hover:bg-white active:scale-90"
+    class="group/top pointer-events-auto relative mr-1.5 grid size-11 translate-y-3 scale-90 place-items-center rounded-full bg-paper/90 text-ink opacity-0 shadow-[0_10px_30px_-12px_rgb(10_15_26/0.45)] ring-1 ring-ink/10 backdrop-blur-md transition-[opacity,translate,scale,visibility] duration-500 ease-spring invisible group-data-[show-top=true]/fab:visible group-data-[show-top=true]/fab:translate-y-0 group-data-[show-top=true]/fab:scale-100 group-data-[show-top=true]/fab:opacity-100 hover:bg-white active:scale-90"
   >
     <svg viewBox="0 0 44 44" class="absolute inset-0 size-full -rotate-90" aria-hidden="true">
       <circle cx="22" cy="22" r="20" fill="none" class="stroke-ink/10" stroke-width="2" />
@@ -78,6 +80,7 @@ import { whatsappHref } from '../../utils/contact';
 <script>
   const root = document.getElementById('floating-actions');
   const toTop = root?.querySelector<HTMLAnchorElement>('[data-to-top]');
+  const end = document.querySelector<HTMLElement>('[data-fab-end]');
 
   if (root && toTop) {
     let frame = 0;
@@ -85,8 +88,9 @@ import { whatsappHref } from '../../utils/contact';
       frame = 0;
       const y = window.scrollY;
       const vh = window.innerHeight;
-      root.dataset.showWa = String(y > vh * 0.6);
-      root.dataset.showTop = String(y > vh * 1.5);
+      const atEnd = end ? end.getBoundingClientRect().top < vh : false;
+      root.dataset.showWa = String(y > vh * 0.6 && !atEnd);
+      root.dataset.showTop = String(y > vh * 1.5 && !atEnd);
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(update);

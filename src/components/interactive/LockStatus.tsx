@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react';
-import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react';
+import { AnimatePresence, animate, m, useMotionValue, useReducedMotion, useTransform } from 'motion/react';
 import { useHydrated } from '../../utils/useHydrated';
 
 type Phase = 'locked' | 'opening' | 'unlocked';
@@ -87,7 +87,7 @@ export default function LockStatus({ ref }: LockStatusProps) {
       <div className="flex items-center gap-3">
         <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-ink text-paper">
           <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round">
-            <motion.path
+            <m.path
               d="M8 11V8a4 4 0 0 1 8 0v3"
               initial={false}
               animate={phase === 'unlocked' ? { y: -2.5, x: 0 } : { y: 0, x: 0 }}
@@ -102,7 +102,7 @@ export default function LockStatus({ ref }: LockStatusProps) {
           <p className="font-mono text-label text-muted uppercase">Estado</p>
           <div className="relative h-5 overflow-hidden text-sm leading-5 font-medium tracking-[-0.01em] text-ink">
             <AnimatePresence initial={false} mode="popLayout">
-              <motion.span
+              <m.span
                 key={phase}
                 className="block"
                 initial={{ y: '100%', opacity: 0 }}
@@ -111,7 +111,7 @@ export default function LockStatus({ ref }: LockStatusProps) {
                 transition={{ duration: 0.45, ease: easePremium }}
               >
                 {copy[phase]}
-              </motion.span>
+              </m.span>
             </AnimatePresence>
           </div>
         </div>
@@ -120,11 +120,11 @@ export default function LockStatus({ ref }: LockStatusProps) {
       </div>
 
       <div className="mt-3.5 h-px overflow-hidden bg-ink/10">
-        <motion.div className="h-full origin-left bg-ink" style={{ scaleX: progress }} />
+        <m.div className="h-full origin-left bg-ink" style={{ scaleX: progress }} />
       </div>
       <div className="mt-2 flex items-center justify-between font-mono text-label text-muted uppercase">
         <span>Apertura</span>
-        <motion.span className="tabular-nums">{percent}</motion.span>
+        <m.span className="tabular-nums">{percent}</m.span>
       </div>
     </div>
   );

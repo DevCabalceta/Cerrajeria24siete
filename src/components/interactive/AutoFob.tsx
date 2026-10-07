@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { AnimatePresence, MotionConfig, motion } from 'motion/react';
+import { AnimatePresence, MotionConfig, m } from 'motion/react';
 import type { AutoMode, AutoModeId } from '../../data/automotive';
 import Button from '../ui/Button';
+import { withLazyMotion } from '../../utils/motion';
 
 type Mode = AutoMode & { href: string };
 
@@ -21,7 +22,7 @@ function StatusPill({ label, done }: { label: string; done: boolean }) {
     <span className="absolute top-0 right-0 inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 font-mono text-label text-ink uppercase ring-1 ring-ink/10">
       <span className={`size-1.5 rounded-full transition-colors duration-500 ${done ? 'bg-live' : 'bg-signal'}`} aria-hidden="true" />
       <AnimatePresence initial={false} mode="popLayout">
-        <motion.span
+        <m.span
           key={label}
           initial={{ y: 8, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -29,7 +30,7 @@ function StatusPill({ label, done }: { label: string; done: boolean }) {
           transition={{ duration: 0.35, ease: easePremium }}
         >
           {label}
-        </motion.span>
+        </m.span>
       </AnimatePresence>
     </span>
   );
@@ -54,7 +55,7 @@ function Signal({ x, y, delay = 0 }: { x: number; y: number; delay?: number }) {
   return (
     <g>
       {[26, 44, 62].map((r, i) => (
-        <motion.path
+        <m.path
           key={r}
           d={arc(x, y, r)}
           fill="none"
@@ -97,11 +98,11 @@ function CarScene() {
         <line x1="256" x2="256" y1="132" y2="178" className="stroke-ink/40" />
         <rect x="196" y="186" width="18" height="4" rx="2" className="fill-ink/40" />
         {/* Lights */}
-        <motion.ellipse cx="441" cy="190" rx="7" ry="5" className="fill-cobalt" initial={{ opacity: 0 }} animate={flash} transition={{ duration: 1.1, delay: 0.45 }} />
-        <motion.ellipse cx="49" cy="194" rx="5" ry="6" className="fill-signal" initial={{ opacity: 0 }} animate={flash} transition={{ duration: 1.1, delay: 0.45 }} />
+        <m.ellipse cx="441" cy="190" rx="7" ry="5" className="fill-cobalt" initial={{ opacity: 0 }} animate={flash} transition={{ duration: 1.1, delay: 0.45 }} />
+        <m.ellipse cx="49" cy="194" rx="5" ry="6" className="fill-signal" initial={{ opacity: 0 }} animate={flash} transition={{ duration: 1.1, delay: 0.45 }} />
         {/* Front door: pops open once unlocked */}
         <rect x="257" y="178" width="98" height="44" className="fill-ink" opacity={open ? 0.85 : 0} style={{ transition: 'opacity 400ms' }} />
-        <motion.g
+        <m.g
           initial={false}
           animate={open ? { x: 14, y: -4, rotate: -3 } : { x: 0, y: 0, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 160, damping: 16 }}
@@ -109,7 +110,7 @@ function CarScene() {
         >
           <path d="M256 178H355V214C355 219 352 222 347 222H256Z" className="fill-surface stroke-ink/70" strokeWidth="1.6" strokeLinejoin="round" />
           <rect x="316" y="186" width="18" height="4" rx="2" className="fill-ink/50" />
-        </motion.g>
+        </m.g>
         {/* Wheels */}
         {[134, 376].map((cx) => (
           <g key={cx}>
@@ -132,7 +133,7 @@ function ChipScene() {
       <StatusPill label={done ? 'Llave programada' : `Emparejando ${Math.min(step + 1, 3)}/3`} done={done} />
       <svg viewBox="0 0 480 300" className="size-full" aria-hidden="true">
         {[0, 1, 2].map((i) => (
-          <motion.circle
+          <m.circle
             key={i}
             cx="190"
             cy="150"
@@ -218,7 +219,7 @@ function ShellScene() {
       <StatusPill label={`${PARTS.length} piezas`} done />
       <svg viewBox="0 0 480 300" className="size-full" aria-hidden="true">
         {PARTS.map((part, i) => (
-          <motion.g
+          <m.g
             key={part.label}
             initial={{ x: 240, y: 130, opacity: 0.6 }}
             animate={{ x: part.x, y: 130, opacity: 1 }}
@@ -230,7 +231,7 @@ function ShellScene() {
             <text x="0" y="122" textAnchor="middle" className="fill-ink/80 font-mono" style={{ fontSize: 11, letterSpacing: '0.08em' }}>
               {part.label.toUpperCase()}
             </text>
-          </motion.g>
+          </m.g>
         ))}
       </svg>
     </>
@@ -285,7 +286,7 @@ function IgnitionScene() {
           );
         })}
         {/* Plug + key, turning together */}
-        <motion.g
+        <m.g
           initial={false}
           animate={{ rotate: angle }}
           transition={{ type: 'spring', stiffness: 140, damping: step === 3 ? 9 : 18 }}
@@ -294,7 +295,7 @@ function IgnitionScene() {
           <rect x="226" y="70" width="28" height="140" rx="10" className="fill-ink" />
           <circle cx="240" cy="86" r="5" className="fill-paper" />
           <rect x="236" y="118" width="8" height="44" rx="2" className="fill-cobalt" />
-        </motion.g>
+        </m.g>
         {/* Dashboard tell-tales */}
         {[0, 1, 2, 3, 4].map((i) => (
           <circle
@@ -354,10 +355,10 @@ const fobIcons: Record<AutoModeId, ReactNode> = {
  * plays a small simulation on the stage: unlocking a (generic, brandless) car,
  * pairing a transponder, an exploded fob, and an ignition turning on.
  */
-export default function AutoFob({ modes, phone }: AutoFobProps) {
+function AutoFob({ modes, phone }: AutoFobProps) {
   const [active, setActive] = useState<AutoModeId>(modes[0].id);
   const [presses, setPresses] = useState(0);
-  const mode = modes.find((m) => m.id === active) ?? modes[0];
+  const mode = modes.find((option) => option.id === active) ?? modes[0];
   const index = modes.indexOf(mode);
   const Scene = SCENES[mode.id];
 
@@ -378,7 +379,7 @@ export default function AutoFob({ modes, phone }: AutoFobProps) {
           >
             {/* Key ring loop and LED */}
             <span aria-hidden="true" className="absolute -top-7 left-1/2 hidden size-9 -translate-x-1/2 rounded-full border-[3px] border-[#a8aeb4] lg:block" />
-            <motion.span
+            <m.span
               key={presses}
               aria-hidden="true"
               className="absolute top-1/2 -left-1 size-1.5 -translate-y-1/2 rounded-full bg-cobalt-bright lg:top-4 lg:left-1/2 lg:-translate-x-1/2 lg:translate-y-0"
@@ -386,14 +387,14 @@ export default function AutoFob({ modes, phone }: AutoFobProps) {
               animate={{ opacity: 0.25 }}
               transition={{ duration: 0.9, ease: 'easeOut' }}
             />
-            {modes.map((m) => {
-              const on = m.id === active;
+            {modes.map((option) => {
+              const on = option.id === active;
               return (
                 <button
-                  key={m.id}
+                  key={option.id}
                   type="button"
                   aria-pressed={on}
-                  onClick={() => press(m.id)}
+                  onClick={() => press(option.id)}
                   className="group/fob flex flex-col items-center gap-1.5 rounded-full focus-visible:outline-paper"
                 >
                   <span
@@ -404,10 +405,10 @@ export default function AutoFob({ modes, phone }: AutoFobProps) {
                     }`}
                   >
                     <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      {fobIcons[m.id]}
+                      {fobIcons[option.id]}
                     </svg>
                   </span>
-                  <span className={`font-mono text-[0.625rem] tracking-[0.08em] uppercase ${on ? 'text-paper' : 'text-paper/70'}`}>{m.button}</span>
+                  <span className={`font-mono text-[0.625rem] tracking-[0.08em] uppercase ${on ? 'text-paper' : 'text-paper/70'}`}>{option.button}</span>
                 </button>
               );
             })}
@@ -433,7 +434,7 @@ export default function AutoFob({ modes, phone }: AutoFobProps) {
               </defs>
             </svg>
             <AnimatePresence mode="wait" initial={false}>
-              <motion.div
+              <m.div
                 key={`${mode.id}-${presses}`}
                 className="absolute inset-0"
                 initial={{ opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
@@ -442,7 +443,7 @@ export default function AutoFob({ modes, phone }: AutoFobProps) {
                 transition={{ duration: 0.35, ease: easePremium }}
               >
                 <Scene />
-              </motion.div>
+              </m.div>
             </AnimatePresence>
           </div>
         </figure>
@@ -454,7 +455,7 @@ export default function AutoFob({ modes, phone }: AutoFobProps) {
           </p>
           <h3 className="relative mt-3 overflow-hidden pb-[0.08em]">
             <AnimatePresence mode="popLayout" initial={false}>
-              <motion.span
+              <m.span
                 key={mode.id}
                 className="block text-[clamp(1.75rem,2.6vw+0.75rem,2.75rem)] leading-[1.02] font-medium tracking-[-0.04em]"
                 initial={{ y: '105%' }}
@@ -463,7 +464,7 @@ export default function AutoFob({ modes, phone }: AutoFobProps) {
                 transition={{ duration: 0.5, ease: easePremium }}
               >
                 {mode.title}
-              </motion.span>
+              </m.span>
             </AnimatePresence>
           </h3>
           <p className="mt-4 max-w-[32rem] text-pretty text-muted">{mode.text}</p>
@@ -488,3 +489,5 @@ export default function AutoFob({ modes, phone }: AutoFobProps) {
     </MotionConfig>
   );
 }
+
+export default withLazyMotion(AutoFob);

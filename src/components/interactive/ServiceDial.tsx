@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import {
   animate,
-  motion,
+  m,
   useInView,
   useMotionValue,
   useMotionValueEvent,
@@ -11,6 +11,7 @@ import {
 import type { ServiceCategory } from '../../data/services';
 import { glyphs, type GlyphName } from '../ui/glyphs';
 import { ArrowUpRightIcon, WhatsAppIcon } from '../ui/icons';
+import { withLazyMotion } from '../../utils/motion';
 
 export interface DialCategory {
   id: ServiceCategory;
@@ -145,7 +146,7 @@ const titleVariants: Variants = {
  * speciality and the panel lists its real services, each one opening WhatsApp
  * with a pre-written message. All panels are server-rendered for SEO.
  */
-export default function ServiceDial({ categories, phone }: ServiceDialProps) {
+function ServiceDial({ categories, phone }: ServiceDialProps) {
   const count = categories.length;
   const reduceMotion = useReducedMotion();
   const rotation = useMotionValue(0);
@@ -301,9 +302,9 @@ export default function ServiceDial({ categories, phone }: ServiceDialProps) {
               </defs>
 
               <circle cx={C} cy={C} r="198" className="fill-[#151c2a] stroke-paper/10" />
-              <motion.g style={{ rotate: rotation }}>
+              <m.g style={{ rotate: rotation }}>
                 <DialFace count={count} active={active} />
-              </motion.g>
+              </m.g>
 
               {/* Static centre cap with the speciality glyph */}
               <circle cx={C} cy={C} r="56" className="fill-ink" />
@@ -359,7 +360,7 @@ export default function ServiceDial({ categories, phone }: ServiceDialProps) {
           const isActive = ci === active;
           const titleId = `servicios-${category.id}`;
           return (
-            <motion.div
+            <m.div
               key={category.id}
               data-service-panel
               role="region"
@@ -376,12 +377,12 @@ export default function ServiceDial({ categories, phone }: ServiceDialProps) {
                     {category.services.length === 1 ? 'servicio' : 'servicios'}
                   </p>
                   <h3 id={titleId} className="mt-3 overflow-hidden pb-[0.08em]">
-                    <motion.span
+                    <m.span
                       variants={titleVariants}
                       className="block text-[clamp(2rem,4vw+0.5rem,3.25rem)] leading-[1] font-medium tracking-[-0.04em]"
                     >
                       {category.label}
-                    </motion.span>
+                    </m.span>
                   </h3>
                   <p className="mt-3 text-paper/60">{category.scope}</p>
                 </div>
@@ -407,7 +408,7 @@ export default function ServiceDial({ categories, phone }: ServiceDialProps) {
 
               <ul className="mt-8">
                 {category.services.map((service, si) => (
-                  <motion.li key={service.title} custom={si} variants={rowVariants}>
+                  <m.li key={service.title} custom={si} variants={rowVariants}>
                     <a
                       href={service.href}
                       target="_blank"
@@ -431,7 +432,7 @@ export default function ServiceDial({ categories, phone }: ServiceDialProps) {
                         <WhatsAppIcon className="size-4" />
                       </span>
                     </a>
-                  </motion.li>
+                  </m.li>
                 ))}
               </ul>
 
@@ -442,10 +443,12 @@ export default function ServiceDial({ categories, phone }: ServiceDialProps) {
                 </a>
                 .
               </p>
-            </motion.div>
+            </m.div>
           );
         })}
       </div>
     </div>
   );
 }
+
+export default withLazyMotion(ServiceDial);
