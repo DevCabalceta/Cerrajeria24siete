@@ -37,17 +37,17 @@
       "statusCode": 301
     },
     {
-      "source": "/:section(blog|tag|category|author|project|comments)/:rest*",
+      "source": "/:section(blog|tag|category|author|project|comments)/:rest(.*)?",
       "destination": "/",
       "statusCode": 301
     },
     {
-      "source": "/:year(20[0-9][0-9])/:rest*",
+      "source": "/:year(20[0-9][0-9])/:rest(.*)?",
       "destination": "/",
       "statusCode": 301
     },
     {
-      "source": "/wp-content/uploads/:rest*",
+      "source": "/wp-content/uploads/:rest(.*)?",
       "destination": "/",
       "statusCode": 301
     }
