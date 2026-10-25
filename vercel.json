@@ -1,0 +1,55 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:file(sitemap|sitemap_index|post-sitemap|page-sitemap|category-sitemap|post_tag-sitemap|author-sitemap|dt_portfolio-sitemap|dt_portfolio_category-sitemap).xml",
+      "destination": "/sitemap-index.xml",
+      "statusCode": 301
+    },
+    {
+      "source": "/:slug(apertura-de-puertas-de-emergencia|asistencia-cerrajera-urgente|cambio-de-cerraduras-de-emergencia|cambio-de-cerraduras-urgentes|cambio-rapido-de-cerraduras|cerrajeria-de-emergencia|cerrajero-24-horas|cerrajero-disponible-24-horas|cerrajero-para-apertura-inmediata|cerrajero-urgente|servicio-urgente-de-cerrajeria|servicio-de-cerrajeria-rapida|soluciones-rapidas-en-cerrajeria|solucion-para-puertas-trabadas|la-importancia-de-un-cerrajero-24-horas|cerrajeros-de-emergencia-que-preguntar-antes-de-contratar-un-cerrajero){/}?",
+      "destination": "/#emergencias",
+      "statusCode": 301
+    },
+    {
+      "source": "/:slug(apertura-de-vehiculos){/}?",
+      "destination": "/#automotriz",
+      "statusCode": 301
+    },
+    {
+      "source": "/:slug(cerrajero-para-portones-electricos|instalacion-de-motores-de-porton|mantenimiento-de-portones-automaticos){/}?",
+      "destination": "/#portones",
+      "statusCode": 301
+    },
+    {
+      "source": "/:slug(servicio-de-cerrajeria-residencial|cerrajero-especializado-en-puertas-blindadas|cerraduras-de-seguridad|cerraduras-doble-paso|instalacion-de-cerraduras-biometricas|instalacion-de-cerraduras-de-seguridad|instalacion-de-cerraduras-inteligentes|instalacion-para-cerraduras-inteligentes|reemplazo-de-cerraduras-antiguas|reparacion-de-cerraduras|reparacion-de-cerraduras-de-seguridad|reparacion-de-sistemas-de-acceso|mantenimiento-de-cerraduras-electronicas|apertura-de-cerraduras|apertura-de-cerraduras-electronicas|apertura-profesional-de-cerraduras){/}?",
+      "destination": "/#residencial",
+      "statusCode": 301
+    },
+    {
+      "source": "/:slug(cerrajero-a-domicilio|cerrajero-profesional-a-domicilio|servicio-profesional-de-cerrajeria|apertura-de-cajas-fuertes|cerrajero-especializado-en-cajas-fuertes|cerrajero-para-cajas-fuertes|instalacion-de-cajas-fuertes-en-costa-rica|cambio-de-combinaciones|duplicado-de-llaves|extraccion-de-llaves-atoradas|extraccion-de-llaves-quebradas){/}?",
+      "destination": "/#servicios",
+      "statusCode": 301
+    },
+    {
+      "source": "/:slug(6-tipos-de-cerraduras-mas-utilizadas|beneficios-de-usar-cerraduras-doble-paso-en-tu-hogar|caja-fuerte-digital-o-mecanica|cajas-fuertes-contra-incendios|cerraduras-doble-paso-inteligentes-innovacion-y-seguridad-en-2024|cerraduras-doble-paso-seguridad-adicional-para-tu-negocio|como-actuar-si-se-pierden-las-llaves-de-casa|como-elegir-la-caja-fuerte-perfecta|como-evitar-robos-en-mis-vacaciones|como-mantener-y-lubricar-cerraduras-doble-paso|como-nos-puede-ayudar-un-buen-cerrajero|como-renovar-las-puertas-cambiando-los-picaportes|como-reparar-el-picaporte-de-cierre-de-la-venta|como-se-hace-la-instalacion-de-cerraduras-doble-paso|como-te-pueden-robar-por-medio-de-bumping|comparativa-de-cerraduras-doble-paso-y-cerraduras-convencionales|conceptos-basicos-de-cerraduras-que-deberias-saber|consejos-de-seguridad-para-el-uso-de-cajas-fuertes-en-casa|consejos-para-evitar-cerrajeros-fraudulentos|consejos-para-mantener-cerraduras-en-buen-estado|guia-para-elegir-la-mejor-cerradura-doble-paso-para-tu-puerta|la-evolucion-de-la-cerrajeria|las-5-cajas-fuertes-mas-seguras-del-mercado-en-2024|las-marcas-mas-confiables-de-cerraduras-doble-paso-en-el-mercado|las-mejores-cajas-fuertes-para-negocios-en-costa-rica|mantenimiento-y-cuidado-de-tu-caja-fuerte-tips-esenciales|pagina-ejemplo-2|por-que-necesitas-una-caja-fuerte-en-tu-hogar-u-oficina|problemas-comunes-con-cerraduras-doble-paso|que-seguridad-tiene-una-caja-fuerte|que-son-las-cerraduras-doble-paso-y-como-funcionan|tipos-de-cajas-fuertes-y-sus-usos|todo-lo-que-los-cerrajeros-pueden-hacer-por-su-seguridad|index.php|feed){/}?",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:section(blog|tag|category|author|project|comments)/:rest*",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:year(20[0-9][0-9])/:rest*",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/wp-content/uploads/:rest*",
+      "destination": "/",
+      "statusCode": 301
+    }
+  ]
+}
