@@ -1479,7 +1479,7 @@ Recomendar al dueño subir presupuesto solo con datos (CPL aceptable + limitado 
 
 ## Google Ads
 
-- Cuenta: **539-926-8449** (USD). La gestionaba la agencia "OneSourceADS" (sin contrato); el 2026-11-17 se le quitó el acceso (onesourceadsoficial@gmail.com). Único usuario: la dueña. Pagos **manuales** con tarjeta propia: avisar si el saldo no alcanza para unos días.
+- Cuenta: **539-926-8449** (USD). La gestionaba la agencia "OneSourceADS" (sin contrato); el 2026-11-17 se le quitó el acceso (onesourceadsoficial@gmail.com). Único usuario: la persona titular de la cuenta. Pagos **manuales** con tarjeta propia: avisar si el saldo no alcanza para unos días.
 - Existe una cuenta a medio configurar "Cerrajería 24 Siete" (153-878-2800): **dejarla sin terminar** (dos cuentas compitiendo = riesgo de política "ventaja desleal").
 - Campañas activas (Búsqueda, solo Red de Búsqueda, Maximizar clics):
 
