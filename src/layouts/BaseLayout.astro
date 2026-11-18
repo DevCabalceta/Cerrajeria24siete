@@ -2,6 +2,7 @@
 import Analytics from '@vercel/analytics/astro';
 import { Font } from 'astro:assets';
 import Seo from '../components/layout/Seo.astro';
+import { tracking } from '../data/tracking';
 import '../styles/global.css';
 
 interface Props {
@@ -23,12 +24,34 @@ const { title, description, image } = Astro.props;
     <!-- Metadata first: link-preview crawlers read only the start of the document. -->
     <Seo title={title} description={description} image={image} />
 
+    <!-- Google Tag Manager (async): Google Ads conversions for WhatsApp and call clicks. -->
+    <script is:inline define:vars={{ gtmId: tracking.gtmId }}>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        const f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', gtmId);
+    </script>
+
     <Font cssVariable="--font-geist" preload />
     <Font cssVariable="--font-geist-mono" />
     <meta name="generator" content={Astro.generator} />
     <Analytics />
   </head>
   <body>
+    <noscript>
+      <iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${tracking.gtmId}`}
+        title="Google Tag Manager"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"></iframe>
+    </noscript>
     <a
       href="#main"
       data-menu-inert
