@@ -21,8 +21,8 @@ import { whatsappHref } from '../utils/contact';
         </h2>
       </div>
       <p class="max-w-[30rem] text-pretty text-paper/70 lg:col-span-5 lg:justify-self-end lg:pb-2 lg:text-[1.0625rem]">
-        Restauración, reparación y mantenimiento de portones y motores eléctricos para hogares y empresas. Pruebe el
-        control y cambie el tipo de motor.
+        Confección, restauración, reparación y mantenimiento de portones y motores eléctricos para hogares y empresas.
+        Pruebe el control y cambie el tipo de motor.
       </p>
     </header>
 
@@ -30,7 +30,7 @@ import { whatsappHref } from '../utils/contact';
       <GateStage client:visible motors={motors} />
     </div>
 
-    <ul class="mt-16 grid border-t border-paper/15 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
+    <ul class="mt-16 grid border-t border-paper/15 sm:grid-cols-2 lg:mt-20 lg:grid-cols-5">
       {
         gateServices.map((service, i) => (
           <li
@@ -38,6 +38,8 @@ import { whatsappHref } from '../utils/contact';
               'border-b border-paper/15 lg:border-b-0',
               i % 2 === 1 && 'sm:border-l sm:border-paper/15',
               i > 0 && 'lg:border-l lg:border-paper/15',
+              // An odd last item spans the two-column row instead of leaving a gap.
+              i === gateServices.length - 1 && i % 2 === 0 && 'sm:col-span-2 lg:col-span-1',
             ]}
           >
             <a

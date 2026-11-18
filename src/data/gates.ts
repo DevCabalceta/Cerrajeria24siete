@@ -2,7 +2,8 @@
  * Electric gates, from the current site: "Servicio de Portones Eléctricos",
  * "Mantenimiento preventivo y reparación de portones y motores eléctricos",
  * "Venta e instalación de motores de cremallera, cadena y pistones" and
- * "Venta y programación de controles para portones eléctricos".
+ * "Venta y programación de controles para portones eléctricos". Gate
+ * fabrication ("confección de portones") confirmed by the owner on 2026-11-17.
  */
 
 export type MotorId = 'cremallera' | 'cadena' | 'pistones';
@@ -27,6 +28,11 @@ export interface GateService {
 }
 
 export const gateServices: ReadonlyArray<GateService> = [
+  {
+    title: 'Confección de portones',
+    text: 'Fabricamos su portón nuevo, listo para automatizar con motor y control.',
+    message: 'Confección de un portón',
+  },
   {
     title: 'Restauración y reparación',
     text: 'Devolvemos a su portón el funcionamiento que tenía.',

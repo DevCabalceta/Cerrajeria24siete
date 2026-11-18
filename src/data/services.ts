@@ -20,7 +20,7 @@ export const serviceCategories: ReadonlyArray<CategoryMeta> = [
   { id: 'residencial', label: 'Residencial y comercial', short: 'Residencial', scope: 'Casas, oficinas y locales.' },
   { id: 'automotriz', label: 'Automotriz', short: 'Automotriz', scope: 'Apertura de vehículos, llaves con chip y controles.' },
   { id: 'cajas-fuertes', label: 'Cajas fuertes', short: 'Cajas fuertes', scope: 'Digitales y mecánicas.' },
-  { id: 'portones', label: 'Portones eléctricos', short: 'Portones', scope: 'Motores, controles y mantenimiento.' },
+  { id: 'portones', label: 'Portones eléctricos', short: 'Portones', scope: 'Confección, motores, controles y mantenimiento.' },
 ];
 
 export interface Service {
@@ -95,6 +95,11 @@ export const services: ReadonlyArray<Service> = [
     title: 'Reparación, venta e instalación de cerraduras, llaves y candados',
     category: 'general',
     summary: 'Reparación de cerraduras, instalación de llavines para vehículos, llavines de ignición, motos y candados.',
+  },
+  {
+    title: 'Confección de portones',
+    category: 'portones',
+    summary: 'Portones nuevos, listos para automatizar con motor y control.',
   },
   {
     title: 'Servicio de portones eléctricos',
