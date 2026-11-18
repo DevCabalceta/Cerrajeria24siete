@@ -1456,3 +1456,77 @@ Pero debe conservar una identidad propia.
 **Section by section.**
 
 No continúes a la siguiente sección sin mi aprobación explícita.
+
+---
+
+# 33. MARKETING DIGITAL — ESTADO ACTUAL (actualizado 2026-11-17)
+
+Contexto de Google Ads, Google Tag Manager, SEO y Perfil de Negocio. Todo se trabaja **solo para Cerrajería24siete** (Cerrajería Arrieta 24 Horas es otro proyecto aparte: no mezclar datos).
+
+## Revisión pendiente — 24 de noviembre de 2026
+
+Analizar en Google Ads (cuenta 539-926-8449), período desde el 17 nov:
+
+1. Conversiones "Clic en llamar (sitio)" y "Clic en WhatsApp (sitio)" por campaña, grupo y provincia.
+2. Costo por contacto (CPL) = costo ÷ conversiones.
+3. ¿Alguna campaña "Limitada por presupuesto"? Revisar "% de impresiones perdidas (presupuesto)".
+4. Términos de búsqueda nuevos → agregar negativas.
+5. Estado de las 30 palabras clave con excepción "Local services" y de los anuncios nuevos.
+6. Si hay ~15–30 conversiones/mes: pasar a "Maximizar conversiones" con objetivo **solo Contacto** (hoy la cuenta también incluye "Descargas" como objetivo predeterminado; quitarlo a nivel de campaña).
+7. Comparar San José/Heredia/Alajuela (+30 %) contra el resto del país.
+
+Recomendar al dueño subir presupuesto solo con datos (CPL aceptable + limitado por presupuesto). Cualquier aumento de gasto necesita su aprobación explícita.
+
+## Google Ads
+
+- Cuenta: **539-926-8449** (USD). La gestionaba la agencia "OneSourceADS"; el dueño autorizó los cambios.
+- Existe una cuenta a medio configurar "Cerrajería 24 Siete" (153-878-2800): **dejarla sin terminar** (dos cuentas compitiendo = riesgo de política "ventaja desleal").
+- Campañas activas (Búsqueda, solo Red de Búsqueda, Maximizar clics):
+
+| Campaña | ID | Presupuesto | Tope CPC | Destino |
+|---|---|---|---|---|
+| Cerrajeria24siete OneSourceADS | 20443264759 | $40/día | $1.50 | secciones del sitio |
+| Portones OneSourceADS | 20500083017 | $15/día | $1.20 | `/#portones` |
+
+- Ubicación: Costa Rica (presencia, no interés) + San José, Heredia y Provincia de Alajuela con **+30 %** en ambas campañas.
+- Grupos Cerrajería: General y cerca de mí, 24 horas y urgencias (`#emergencias`), A domicilio, Zonas (`#cobertura`), Automotriz (`#automotriz`), Cerraduras y cajas fuertes (`#servicios`). Palabras en frase/exacta.
+- Grupos Portones: Reparación y mantenimiento, Motores, Controles, Confección (cada grupo con un 2.º anuncio que menciona "Confección de Portones").
+- Grupo viejo "Cerrajeria24siete OneSourceADS" (amplias, nivel de calidad bajo, anuncio con teléfono en el texto) → **detenido**.
+- Negativas: Cerrajería 38 (walmart, epa, cómo, curso, porton, motor…); Portones 28 (incluye "cerrajero", "cerrajeria").
+- Recursos: vínculos a sitio por campaña hacia cada sección, textos destacados, fragmentos "Servicios", recurso de llamada 8355 7575 (cuenta). Vínculos viejos "Testimonios" y "Guía de Cómo Llegar" **detenidos** (prometían cosas que el sitio no tiene).
+- Política "Local services": muchas palabras con "cerrajero" requieren **solicitar excepción** desde la interfaz (la carga masiva no puede). En Costa Rica están permitidas.
+- Números de desvío de Google **no existen en Costa Rica**: no se puede medir duración de llamadas; solo clics en `tel:`/WhatsApp.
+- Servicios confirmados por el dueño además del sitio: electroimanes, nivelación de puertas de vidrio, cambio de guardas, confección de portones.
+
+### Datos de referencia (antes del cambio)
+- 10 oct–6 nov 2026: $1,938.87, 1,813 clics, CPC $1.07, **0 conversiones medidas** (objetivo era "Vistas de página").
+- Planificador (CR, mensual): cerrajería ~2,900 · cerrajero cerca de mí ~1,000 · cerrajero ~480 · motor para portón eléctrico ~480 · cerrajería 24 horas ~320 · cerrajero a domicilio ~210.
+
+## Medición
+
+- Google Tag Manager **GTM-M9RFPH2T** (cuenta GTM "Cerrajería24siete"), instalado en `src/layouts/BaseLayout.astro`, ID en `src/data/tracking.ts`.
+- Etiquetas: Google tag AW-10782699656 (todas las páginas), vinculador de conversiones, y conversiones Ads:
+  - "Clic en WhatsApp (sitio)" — etiqueta `5lBgCKD4v7odEIjhy5Uo` — activador Click URL contiene `wa.me`.
+  - "Clic en llamar (sitio)" — etiqueta `fTS6CKP4v7odEIjhy5Uo` — activador Click URL contiene `tel:`.
+- Cualquier `<a href="tel:…">` o `<a href="https://wa.me/…">` nuevo se mide solo; no hace falta marcar botones.
+- "Vista de página" y "Contacto cerrajeria" (viejas) quedaron como acciones **secundarias**.
+- GA4 no está configurado (solo Vercel Analytics).
+
+## SEO y sitio
+
+- `vercel.json`: 301 de las ~144 URLs del WordPress viejo hacia secciones/portada; sitemaps viejos → `/sitemap-index.xml`.
+- Search Console: propiedad de dominio verificada (TXT en DNS de Vercel); sitemap `sitemap-index.xml` enviado; sitemaps viejos quitados.
+- Título/descripción y textos con las búsquedas reales: "cerrajería 24 horas", "cerrajería a domicilio", "apertura de carros".
+- Redes confirmadas en `src/data/business.ts` (footer, menú móvil y `sameAs`): Facebook (id 61556389225699) e Instagram @cerrajeria24siete.
+
+## Perfil de Negocio de Google ("Cerrajería 24 Siete", verificado)
+
+- Descripción completa, sitio con `?utm_source=google&utm_medium=organic&utm_campaign=gbp`, áreas de servicio: las 7 provincias, horario 24 h.
+- Categoría principal "Cerrajero" + secundaria "Proveedor de puertas de garaje"; servicios personalizados agregados (portones, electroimanes, vidrio, amaestramiento, guardas…).
+- Reseñas respondidas al 2026-11-17. Recomendación permanente: pedir reseñas a cada cliente ("Solicita opiniones").
+
+## Pendientes / ideas
+
+- Páginas dedicadas por servicio y zona (`/cerrajero-a-domicilio`, `/apertura-de-carros`, `/cerrajeria-heredia`…) para SEO y como páginas de destino de Ads (si se crean, ajustar las redirecciones de `vercel.json`).
+- Política de privacidad (ahora hay cookies de Google).
+- Franja de datos del Hero sobresale ~38 px en 360×740.
