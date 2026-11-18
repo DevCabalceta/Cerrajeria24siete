@@ -1,13 +1,14 @@
 ---
 import LiveStatus from '../ui/LiveStatus';
 import Logo from '../ui/Logo';
-import { ArrowUpRightIcon, MailIcon, PhoneIcon, WhatsAppIcon } from '../ui/icons';
+import { ArrowUpRightIcon, FacebookIcon, InstagramIcon, MailIcon, PhoneIcon, WhatsAppIcon } from '../ui/icons';
 import { business } from '../../data/business';
 import { mobileNav } from '../../data/navigation';
 import { serviceCategories } from '../../data/services';
 import { mailHref, telHref, whatsappHref } from '../../utils/contact';
 
 const year = new Date().getFullYear();
+const socialIcons = { Facebook: FacebookIcon, Instagram: InstagramIcon };
 const brand = [...'Cerrajería'].map((char) => ({ char, muted: false })).concat([...'24siete'].map((char) => ({ char, muted: true })));
 ---
 
@@ -80,6 +81,19 @@ const brand = [...'Cerrajería'].map((char) => ({ char, muted: false })).concat(
               <MailIcon className="size-4 shrink-0 text-paper/60" />
               <span class="link-underline min-w-0 pb-0.5 [overflow-wrap:anywhere]">{business.email}</span>
             </a>
+          </li>
+          <li class="flex flex-wrap gap-x-6 gap-y-3">
+            {
+              business.socials.map((social) => {
+                const Icon = socialIcons[social.label];
+                return (
+                  <a href={social.href} target="_blank" rel="noopener noreferrer" class="group/f inline-flex items-center gap-3 text-paper/85 hover:text-paper">
+                    <Icon className="size-4 text-paper/60 transition-transform duration-500 ease-spring group-hover/f:-rotate-12" />
+                    <span class="link-underline pb-0.5">{social.label}</span>
+                  </a>
+                );
+              })
+            }
           </li>
           <li class="pt-2 text-sm text-paper/60">
             {business.availability.long} · {business.coverage.areas.join(', ')} y todo el país

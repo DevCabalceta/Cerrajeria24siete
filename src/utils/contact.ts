@@ -18,6 +18,7 @@ export const contactLinks = {
   availability: business.availability.label,
   hours: business.availability.long,
   coverage: `${business.coverage.areas.join(' · ')} — ${business.coverage.summary}`,
+  socials: business.socials,
 } as const;
 
 export type ContactLinks = typeof contactLinks;

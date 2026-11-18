@@ -58,10 +58,13 @@ export const business = {
   ],
 
   /**
-   * No verified social profiles were found on the current site (only the
-   * theme's generic share buttons). Add entries here once confirmed.
+   * Listed on the Google Business Profile and confirmed by the owner on
+   * 2026-11-17. Also emitted as `sameAs` in the structured data.
    */
-  socials: [] as ReadonlyArray<{ label: string; href: string }>,
+  socials: [
+    { label: 'Facebook', href: 'https://www.facebook.com/people/Cerrajer%C3%ADa-24siete/61556389225699/' },
+    { label: 'Instagram', href: 'https://www.instagram.com/cerrajeria24siete' },
+  ] as ReadonlyArray<{ label: 'Facebook' | 'Instagram'; href: string }>,
 } as const;
 
 export type Business = typeof business;

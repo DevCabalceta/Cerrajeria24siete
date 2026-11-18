@@ -321,6 +321,22 @@ function MobileMenu({ items, contact }: MobileMenuProps) {
                     <dt className="font-mono text-label text-paper/45 uppercase">Cobertura</dt>
                     <dd className="mt-1.5 text-pretty text-paper/75">{contact.coverage}</dd>
                   </div>
+                  <div className="col-span-2 [@media(max-height:44rem)]:hidden">
+                    <dt className="font-mono text-label text-paper/45 uppercase">Redes</dt>
+                    <dd className="mt-1.5 flex gap-5">
+                      {contact.socials.map((social) => (
+                        <a
+                          key={social.label}
+                          href={social.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link-underline pb-0.5"
+                        >
+                          {social.label}
+                        </a>
+                      ))}
+                    </dd>
+                  </div>
                 </dl>
               </m.div>
             </nav>
